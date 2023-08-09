@@ -7,7 +7,7 @@ using TMPro;
 // https://gamedevbeginner.com/how-to-make-countdown-timer-in-unity-minutes-seconds/
 // Coroutine or Update for timer?
 // https://stackoverflow.com/questions/61464452/in-unity-when-should-i-use-coroutines-versus-subtracting-time-deltatime-in-upda
-public class Timer : MonoBehaviour
+public class TimerManager: MonoBehaviour
 {
     [SerializeField]
     private float _timeRemaining = 60;
