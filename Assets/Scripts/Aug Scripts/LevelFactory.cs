@@ -43,6 +43,8 @@ namespace Tools
                 var theme = (LevelThemeName)level.Theme;
                 var type = (LevelTypeName)level.Type;
                 var number = level.LevelNumber;
+                var dictionary = level.LevelDictionary;
+                var dynamicData = level.DynamicData;
 
                 if (!dataDictionary.ContainsKey(theme))
                 {
@@ -54,6 +56,17 @@ namespace Tools
                     dataDictionary[theme][type] = new List<LevelNumber>();
                 }
                 dataDictionary[theme][type].Add(number);
+
+                // TASK // Fix here
+                if (!dataDictionary[theme][type].Contains(dictionary))
+                {
+                    dataDictionary[theme][type].Add(dictionary);
+                }
+
+                if (!dataDictionary[theme][type].Contains(dynamicData))
+                {
+                    dataDictionary[theme][type].Add(dynamicData);
+                }
             }
             return dataDictionary;
         }

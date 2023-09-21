@@ -16,10 +16,10 @@ namespace Data
         public int Type { get; private set; }                       // set LevelType        2nd int
         public int Number { get; private set; }                   // set playground size     
         public string ThemeName { get; private set; }
-        public string LevelTypeName { get; private set; }           // take from enum
+        public string TypeName { get; private set; }           // take from enum
         public LevelType LevelType { get; private set; }
         public LevelNumber LevelNumber { get; private set; }        // set playground size  3rd int
-        public ILevelDictionary Dictionary { get; private set; }
+        public LevelDictionary LevelDictionary { get; private set; }
         public DynamicData DynamicData { get; private set; }
 
         // Level Constructor
@@ -54,7 +54,7 @@ namespace Data
 
             if (Type <= (Enum.GetValues(typeof(LevelTypeName)).Length))
             {
-                LevelTypeName = ((LevelTypeName)Type).ToString();
+                TypeName = ((LevelTypeName)Type).ToString();
             }
             // TASK // But here we can change something
             else
@@ -83,7 +83,7 @@ namespace Data
             }
             if (Type <= (Enum.GetValues(typeof(LevelTypeName)).Length))
             {
-                LevelTypeName = ((LevelTypeName)Type).ToString();
+                TypeName = ((LevelTypeName)Type).ToString();
             }
             else
             {
@@ -92,8 +92,57 @@ namespace Data
 
             LevelType = new LevelType((LevelTypeName)Type);
             LevelNumber = new LevelNumber(levelId[2]);
-            // TASK // Create Dictionary abstract class
 
+            switch ((LevelThemeName)Theme)
+            {
+                case LevelThemeName.SimpleFigures:
+                    break;
+                case LevelThemeName.Numerals:
+                    LevelDictionary = new NumbersDictionary();
+                    break;
+                case LevelThemeName.TagGame:
+                    break;
+                case LevelThemeName.Symbols:
+                    break;
+                case LevelThemeName.ArithmeticOperations:
+                    break;
+                case LevelThemeName.RomanNumerals:
+                    break;
+                case LevelThemeName.EnglishAlphabet:
+                    LevelDictionary = new AlphabetDictionary();
+                    break;
+                case LevelThemeName.ChineseCharacters:
+                    break;
+                case LevelThemeName.WordParts:
+                    break;
+                case LevelThemeName.Pharse:
+                    break;
+                case LevelThemeName.SameMeaning:
+                    break;
+                case LevelThemeName.Emoji:
+                    break;
+                case LevelThemeName.EmojiParts:
+                    break;
+                case LevelThemeName.WordsAndPics:
+                    break;
+                case LevelThemeName.Colors:
+                    break;
+                case LevelThemeName.ColorShades:
+                    break;
+                case LevelThemeName.FastLowPolyPics:
+                    break;
+                case LevelThemeName.Puzzles:
+                    break;
+                case LevelThemeName.Pictures:
+                    break;
+                case LevelThemeName.BonusCraft:
+                    break;
+                case LevelThemeName.BonusStylus:
+                    break;
+                default:
+                    throw new ArgumentException("Invalid Level Theme");
+                    break;
+            }
         }
     }
 

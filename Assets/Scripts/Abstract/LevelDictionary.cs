@@ -1,3 +1,7 @@
+/// <summary>
+/// Add Different all methods here 
+/// and create Interfaces here for different Dictionaries
+/// </summary>
 public abstract class LevelDictionary
 {
     public abstract string GetData();
@@ -16,7 +20,6 @@ public class StringLevelDictionary : LevelDictionary
         return data;
     }
 }
-
 public class AlphabetDictionary : LevelDictionary
 {
     public override string GetData()
@@ -24,7 +27,6 @@ public class AlphabetDictionary : LevelDictionary
         return "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     }
 }
-
 public class NumbersDictionary : LevelDictionary
 {
     public override string GetData()

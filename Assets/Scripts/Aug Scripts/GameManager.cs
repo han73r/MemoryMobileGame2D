@@ -63,13 +63,20 @@ public /*sealed */class GameManager : MonoBehaviour
 
     private void LoadGameData()
     {
+        // Seems I don't need LevelFactory? 
+        // It should prepare limits of levels
+
+
+
+
+
+
         // Test Create several LevelNumbers to List()
         var levelNumbers = new List<LevelNumber>();
         for (int i = 0; i <= 10; i++)
         {
             levelNumbers.Add(new LevelNumber(i));
         }
-
         _levels = LevelFactory.SetUpLevels();
         _levelsDict = LevelFactory.ConvertToLevelDataDictionary(_levels);
         // PrepareLevelsList();
