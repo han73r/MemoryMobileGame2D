@@ -9,7 +9,7 @@ namespace Managers
     /// And keep game states: win/lose/pause/ingame
     /// DDOL
     /// </summary>
-    public class LevelManager : MonoBehaviour
+    public class DynamicLevelManager : MonoBehaviour
     {
 
     }

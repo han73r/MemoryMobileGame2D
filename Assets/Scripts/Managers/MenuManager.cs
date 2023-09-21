@@ -11,7 +11,7 @@ namespace Managers
     {
         private void Start()
         {
-            ConstructorManager.CreateLevel();
+            //LevelConstructorManager.CreateLevel();
         }
         
     }
