@@ -37,21 +37,26 @@ public /*sealed */class GameManager : MonoBehaviour
     }
     #endregion
 
+    [SerializeField] private ThemeButtonManager my_themeButtonManager;
 
     //TASK // Set to Props with Get; private set
+    //TASK // Or Set as readonly I want to protect levels!
     // Values
     private static List<Level> _levels;
-    private static Dictionary<LevelThemeName, Dictionary<LevelTypeName, List<LevelNumber>>> _levelsDict;
-    private static int _maxLevel;
-    private static int[] _currentLevel;
+    // private static Dictionary<LevelThemeName, Dictionary<LevelTypeName, List<Level>>> _levelsDict;
+    //private static int _maxLevel;
+    //private static int[] _currentLevel;
 
     // TASK // DDOL and Singleton
     private void Start()
     {
         LoadGameData();
-        // TASK // Find better Naming solution
-        CreateMenu();
-        CreateNextLevel();
+        CreateThemeMenu();
+
+        // TASK // May be not in Start()
+        //CreateTypesSubMenu();
+        //CreateLevel();
+        //CreateNextLevel();
 
         int[] firstlevel = { 0, 0, 0 };
         CreateLevel(firstlevel);
@@ -66,11 +71,6 @@ public /*sealed */class GameManager : MonoBehaviour
         // Seems I don't need LevelFactory? 
         // It should prepare limits of levels
 
-
-
-
-
-
         // Test Create several LevelNumbers to List()
         var levelNumbers = new List<LevelNumber>();
         for (int i = 0; i <= 10; i++)
@@ -78,16 +78,16 @@ public /*sealed */class GameManager : MonoBehaviour
             levelNumbers.Add(new LevelNumber(i));
         }
         _levels = LevelFactory.SetUpLevels();
-        _levelsDict = LevelFactory.ConvertToLevelDataDictionary(_levels);
+        var _levelsDict = LevelFactory.ConverLevelListToDictionary(_levels);
         // PrepareLevelsList();
         // LoadPlayerData();
         // LoadOptionsData();                                       // Sound, Music and etc.
         Debug.Log("StopHere");
     }
 
-    private void CreateMenu()
+    private void CreateThemeMenu()
     {
-        // CreateLevelSelectionUI();
+        my_themeButtonManager.CreateThemeButtons();
     }
 
     public void CreateNextLevel()

@@ -9,6 +9,12 @@ namespace Tools
     // Somebody choose the level and set to Constructor to create it
     public static class LevelFactory
     {
+        private static readonly int uiOffsetHeight = 400;          // UI height px
+        private static readonly int uiOffsetWidth = 150;           // UI width px
+        private static readonly int cardPxSize = 100;              // UI width px
+        private static readonly int initialRowCount = 2;
+        private static readonly int initialColCount = 2;
+
         /// <summary>
         /// Create List<Levels>
         /// </summary>
@@ -23,14 +29,40 @@ namespace Tools
                 {
                     foreach (var levelNumber in levelNumbers)
                     {
-                        int[] levelId = { (int)theme, (int)type, levelNumber.Number};
+                        int[] levelId = { (int)theme, (int)type, levelNumber.Number };
                         Level level = new Level(levelId, levelNumber);
                         levels.Add(level);
-                    }                  
+                    }
                 }
             }
             return levels;
         }
+        private static List<LevelNumber> GenerateLevelNumberData()
+        {
+            // Get max level cards per Row and Col
+            int screenWidth = Screen.width - uiOffsetWidth;
+            int screenHeight = Screen.height - uiOffsetHeight;
+            int maxCardsPerRow = screenWidth / cardPxSize;
+            int maxCardsPerColumn = screenHeight / cardPxSize;
+
+            // 1st(0) level values
+            int currentRowCount = initialRowCount;
+            int currentColCount = initialColCount;
+            int currentLevel = 0;
+
+            // TASK // Change to more simplier var
+            var data = new List<LevelNumber>();
+            while (currentRowCount <= maxCardsPerColumn && currentColCount <= maxCardsPerRow)
+            {
+                data.Add(new LevelNumber(currentLevel, currentRowCount, currentColCount));
+                UpdateRowCountAndColCount(ref currentRowCount, ref currentColCount,
+                    maxCardsPerRow, maxCardsPerColumn);
+                currentLevel++;
+            }
+            return data;
+        }
+
+
         /// <summary>
         /// Create Dictionary from List for simple work with it
         /// </summary>
@@ -57,54 +89,46 @@ namespace Tools
                 }
                 dataDictionary[theme][type].Add(number);
 
-                // TASK // Fix here
-                if (!dataDictionary[theme][type].Contains(dictionary))
-                {
-                    dataDictionary[theme][type].Add(dictionary);
-                }
+                //// TASK // Fix here
+                //if (!dataDictionary[theme][type].Contains(dictionary))
+                //{
+                //    dataDictionary[theme][type].Add(dictionary);
+                //}
 
-                if (!dataDictionary[theme][type].Contains(dynamicData))
-                {
-                    dataDictionary[theme][type].Add(dynamicData);
-                }
+                //if (!dataDictionary[theme][type].Contains(dynamicData))
+                //{
+                //    dataDictionary[theme][type].Add(dynamicData);
+                //}
             }
             return dataDictionary;
         }
-    
-        private static readonly int uiOffsetHeight = 400;          // UI height px
-        private static readonly int uiOffsetWidth = 150;           // UI width px
-        private static readonly int cardPxSize = 100;              // UI width px
-        private static readonly int initialRowCount = 2;
-        private static readonly int initialColCount = 2;
-        private static List<LevelNumber> GenerateLevelNumberData()
+
+        // TASK // Looks like a mistake - Level instead of List<Level>
+        public static Dictionary<LevelThemeName, Dictionary<LevelTypeName, Level>> ConverLevelListToDictionary(List<Level> levels)
         {
-            // Get max level cards per Row and Col
-            int screenWidth = Screen.width - uiOffsetWidth;
-            int screenHeight = Screen.height - uiOffsetHeight;
-            int maxCardsPerRow = screenWidth / cardPxSize;
-            int maxCardsPerColumn = screenHeight / cardPxSize;
+            var dataDictionary = new Dictionary<LevelThemeName, Dictionary<LevelTypeName, Level>>();
 
-            // 1st(0) level values
-            int currentRowCount = initialRowCount;
-            int currentColCount = initialColCount;
-            int currentLevel = 0;
-
-            // TASK // Change to more simplier var
-            var data = new List<LevelNumber>();
-            while (currentRowCount <= maxCardsPerColumn && currentColCount <= maxCardsPerRow)
+            foreach (var level in levels)
             {
-                data.Add(new LevelNumber (currentLevel,currentRowCount,currentColCount));
-                UpdateRowCountAndColCount(ref currentRowCount, ref currentColCount,
-                    maxCardsPerRow, maxCardsPerColumn);
-                currentLevel++;
+                var theme = (LevelThemeName)level.Theme;
+                var type = (LevelTypeName)level.Type;
+
+                if (!dataDictionary.ContainsKey(theme))
+                {
+                    dataDictionary[theme] = new Dictionary<LevelTypeName, Level>();
+                }
+
+                dataDictionary[theme][type] = level;
             }
-            return data;
+
+            return dataDictionary;
         }
 
-        /// <summary>
-        /// Increase Row or Col throug screen size rates
-        /// </summary>
-        private static void UpdateRowCountAndColCount(ref int curRowCount, ref int curColCount,
+
+            /// <summary>
+            /// Increase Row or Col throug screen size rates
+            /// </summary>
+            private static void UpdateRowCountAndColCount(ref int curRowCount, ref int curColCount,
     int maxCardPerRow, int maxCardPerCol)
         {
             if ((float)curRowCount / curColCount < (float)maxCardPerCol / maxCardPerRow)

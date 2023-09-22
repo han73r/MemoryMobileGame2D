@@ -1,5 +1,15 @@
+using System;
+using System.Linq;
+
 namespace Data
 {
+    public static class EnumHelper
+    {
+        public static T[] GetValues<T>() where T : Enum
+        {
+            return Enum.GetValues(typeof(T)).Cast<T>().ToArray();
+        }
+    }
     public enum LevelThemeName
     {
         SimpleFigures,
@@ -39,7 +49,6 @@ namespace Data
         BurnMemory,                 // add points at the end of the game
         SelfOpenedMemory,           // add points at the end of the game
     }
-
     public enum BonusLevelTypeData
     {
         Rotated,
