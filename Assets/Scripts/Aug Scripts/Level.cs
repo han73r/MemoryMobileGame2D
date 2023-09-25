@@ -22,7 +22,7 @@ namespace Data
         public LevelDictionary LevelDictionary { get; private set; }
         public DynamicData DynamicData { get; private set; }
 
-        // Level Constructor
+        // Level Constructor to create level List
         public Level(int[] levelId, LevelNumber levelNumber)
         {
             if (levelId.Length != LevelIdLenth)
@@ -62,9 +62,11 @@ namespace Data
                 throw new ArgumentException("Invalid Theme value for ThemeName.");
             }
 
+            DynamicData = new DynamicData(levelId);
+
             // TASK // add LevelType, ILevelDictionary, DynamicData
         }
-        // Level Constructor 2 - current
+        // Level Constructor 2 (test?)
         public Level(int[] levelId)
         {
             LevelId = levelId;
@@ -271,9 +273,10 @@ namespace Data
             Columns = cols;
         }
     }
+
     // TASK // Save this data
     [SerializeField]
-    public abstract class DynamicData
+    public class DynamicData
     {
         private int minStars = 0;
         private int maxStars = 3;
@@ -300,8 +303,7 @@ namespace Data
                 }
             }
         }
-        public bool IsOpened { get; private set; }
-
+        public bool IsOpened { get; private set; } = false;
         public int[] PlayerScore { get; internal set; }             // keeps point data about each played session
         public int BestPlayerScore { get; private set; }            // values for dynamic difficulty
         public int MiddlePlayerScore { get; private set; }
@@ -311,6 +313,11 @@ namespace Data
         public float BestPlayerTime { get; private set; }           // only for win condition, where faster is better
         public float MiddlePlayerTime { get; private set; }         // only win condition
         public float GoalForPlayerTime { get; internal set; }       // set dinamic difficulty from previous values
+
+        public DynamicData(int[] levelId)
+        {
+            IsOpened = (levelId[0] == 0 && levelId[1] == 0 && levelId[2] == 0);
+        }
     }
 
     public static class MiddleResultCounter

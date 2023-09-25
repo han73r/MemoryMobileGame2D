@@ -55,4 +55,10 @@ namespace Data
         Color,
         Reload
     }
+    public enum MenuLevel
+    {
+        Main,
+        Theme,
+        Type
+    }
 }

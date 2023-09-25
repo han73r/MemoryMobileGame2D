@@ -12,7 +12,7 @@ using System.Linq;
 /// <summary>
 /// Game starts here.
 /// Control Scenes
-/// Other Managers (only them), do not control data directly!
+/// Other Managers (only them), do not control data directly! Only levelList and dict
 /// </summary>
 public /*sealed */class GameManager : MonoBehaviour
 {
@@ -37,20 +37,27 @@ public /*sealed */class GameManager : MonoBehaviour
     }
     #endregion
 
-    [SerializeField] private ThemeButtonManager my_themeButtonManager;
+    [SerializeField] private MenuManager my_menuManager;
 
     //TASK // Set to Props with Get; private set
     //TASK // Or Set as readonly I want to protect levels!
     // Values
-    private static List<Level> _levels;
-    // private static Dictionary<LevelThemeName, Dictionary<LevelTypeName, List<Level>>> _levelsDict;
+    private static List<Level> _levels;                         // All levels list using Screen Resolution
+    public static Dictionary<LevelThemeName, Dictionary<LevelTypeName, List<Level>>> levelsDict { get; private set; }
     //private static int _maxLevel;
     //private static int[] _currentLevel;
 
-    // TASK // DDOL and Singleton
-    private void Start()
+    // TASK // DDOL
+
+    private void Awake()
     {
         LoadGameData();
+    }
+
+
+    private void Start()
+    {
+        CreateMainMenu();
         CreateThemeMenu();
 
         // TASK // May be not in Start()
@@ -68,26 +75,20 @@ public /*sealed */class GameManager : MonoBehaviour
 
     private void LoadGameData()
     {
-        // Seems I don't need LevelFactory? 
-        // It should prepare limits of levels
-
-        // Test Create several LevelNumbers to List()
-        var levelNumbers = new List<LevelNumber>();
-        for (int i = 0; i <= 10; i++)
-        {
-            levelNumbers.Add(new LevelNumber(i));
-        }
         _levels = LevelFactory.SetUpLevels();
-        var _levelsDict = LevelFactory.ConverLevelListToDictionary(_levels);
+        levelsDict = LevelFactory.ConverLevelListToDictionary(_levels);
         // PrepareLevelsList();
         // LoadPlayerData();
         // LoadOptionsData();                                       // Sound, Music and etc.
         Debug.Log("StopHere");
     }
-
+    private void CreateMainMenu()
+    {
+        // TASK // Add MenuManager method
+    }
     private void CreateThemeMenu()
     {
-        my_themeButtonManager.CreateThemeButtons();
+        my_menuManager.CreateThemeButtons(levelsDict);
     }
 
     public void CreateNextLevel()

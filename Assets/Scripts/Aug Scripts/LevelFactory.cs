@@ -62,73 +62,38 @@ namespace Tools
             return data;
         }
 
-
         /// <summary>
-        /// Create Dictionary from List for simple work with it
+        ///  Create dictionary to easy work with from list
         /// </summary>
-        public static Dictionary<LevelThemeName, Dictionary<LevelTypeName, List<LevelNumber>>> ConvertToLevelDataDictionary(List<Level> levels)
+        public static Dictionary<LevelThemeName, Dictionary<LevelTypeName, List<Level>>> ConverLevelListToDictionary(List<Level> levels)
         {
-            var dataDictionary = new Dictionary<LevelThemeName, Dictionary<LevelTypeName, List<LevelNumber>>>();
+            var dataDictionary = new Dictionary<LevelThemeName, Dictionary<LevelTypeName, List<Level>>>();
 
             foreach (var level in levels)
             {
                 var theme = (LevelThemeName)level.Theme;
                 var type = (LevelTypeName)level.Type;
-                var number = level.LevelNumber;
-                var dictionary = level.LevelDictionary;
-                var dynamicData = level.DynamicData;
 
                 if (!dataDictionary.ContainsKey(theme))
                 {
-                    dataDictionary[theme] = new Dictionary<LevelTypeName, List<LevelNumber>>();
+                    dataDictionary[theme] = new Dictionary<LevelTypeName, List<Level>>();
                 }
 
                 if (!dataDictionary[theme].ContainsKey(type))
                 {
-                    dataDictionary[theme][type] = new List<LevelNumber>();
-                }
-                dataDictionary[theme][type].Add(number);
-
-                //// TASK // Fix here
-                //if (!dataDictionary[theme][type].Contains(dictionary))
-                //{
-                //    dataDictionary[theme][type].Add(dictionary);
-                //}
-
-                //if (!dataDictionary[theme][type].Contains(dynamicData))
-                //{
-                //    dataDictionary[theme][type].Add(dynamicData);
-                //}
-            }
-            return dataDictionary;
-        }
-
-        // TASK // Looks like a mistake - Level instead of List<Level>
-        public static Dictionary<LevelThemeName, Dictionary<LevelTypeName, Level>> ConverLevelListToDictionary(List<Level> levels)
-        {
-            var dataDictionary = new Dictionary<LevelThemeName, Dictionary<LevelTypeName, Level>>();
-
-            foreach (var level in levels)
-            {
-                var theme = (LevelThemeName)level.Theme;
-                var type = (LevelTypeName)level.Type;
-
-                if (!dataDictionary.ContainsKey(theme))
-                {
-                    dataDictionary[theme] = new Dictionary<LevelTypeName, Level>();
+                    dataDictionary[theme][type] = new List<Level>();
                 }
 
-                dataDictionary[theme][type] = level;
+                dataDictionary[theme][type].Add(level);
             }
 
             return dataDictionary;
         }
 
-
-            /// <summary>
-            /// Increase Row or Col throug screen size rates
-            /// </summary>
-            private static void UpdateRowCountAndColCount(ref int curRowCount, ref int curColCount,
+        /// <summary>
+        /// Increase Row or Col throug screen size rates
+        /// </summary>
+        private static void UpdateRowCountAndColCount(ref int curRowCount, ref int curColCount,
     int maxCardPerRow, int maxCardPerCol)
         {
             if ((float)curRowCount / curColCount < (float)maxCardPerCol / maxCardPerRow)
