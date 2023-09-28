@@ -20,14 +20,14 @@ public class StringLevelDictionary : LevelDictionary
         return data;
     }
 }
-public class AlphabetDictionary : LevelDictionary
+public class EnglishAlphabet : LevelDictionary
 {
     public override string GetData()
     {
         return "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     }
 }
-public class NumbersDictionary : LevelDictionary
+public class Numerals : LevelDictionary
 {
     public override string GetData()
     {

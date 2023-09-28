@@ -14,9 +14,9 @@ namespace Data
         public int[] LevelId { get; private set; }                  // Theme+Type+LevelNumber
         public int Theme { get; private set; }                      // choosed dictionary   1st int
         public int Type { get; private set; }                       // set LevelType        2nd int
-        public int Number { get; private set; }                   // set playground size     
+        public int Number { get; private set; }                     // set playground size     
         public string ThemeName { get; private set; }
-        public string TypeName { get; private set; }           // take from enum
+        public string TypeName { get; private set; }                // take from enum
         public LevelType LevelType { get; private set; }
         public LevelNumber LevelNumber { get; private set; }        // set playground size  3rd int
         public LevelDictionary LevelDictionary { get; private set; }
@@ -28,19 +28,19 @@ namespace Data
             if (levelId.Length != LevelIdLenth)
             {
                 throw new ArgumentException($"LevelId should contain exactly {LevelIdLenth} integers.");
-            }
-
+            }                   // Check
             foreach (int idPart in levelId)
             {
                 if (idPart < MinIdValue)
                 {
                     throw new ArgumentException($"Each element in LevelId should be equal or bigger than {MinIdValue}.");
                 }
-            }
+            }                       // Check
+            
             LevelId = levelId;
             Theme = levelId[0];
             Type = levelId[1];
-            LevelNumber = levelNumber;
+            Number = levelId[2];
 
             if (Theme <= (Enum.GetValues(typeof(LevelThemeName)).Length))
             {
@@ -62,9 +62,61 @@ namespace Data
                 throw new ArgumentException("Invalid Theme value for ThemeName.");
             }
 
-            DynamicData = new DynamicData(levelId);
+            LevelType = new LevelType((LevelTypeName)Type);
+            LevelNumber = levelNumber;
 
-            // TASK // add LevelType, ILevelDictionary, DynamicData
+            switch ((LevelThemeName)Theme)
+            {
+                case LevelThemeName.SimpleFigures:
+                    break;
+                case LevelThemeName.Numerals:
+                    LevelDictionary = new Numerals();
+                    break;
+                case LevelThemeName.TagGame:
+                    break;
+                case LevelThemeName.Symbols:
+                    break;
+                case LevelThemeName.ArithmeticOperations:
+                    break;
+                case LevelThemeName.RomanNumerals:
+                    break;
+                case LevelThemeName.EnglishAlphabet:
+                    LevelDictionary = new EnglishAlphabet();
+                    break;
+                case LevelThemeName.ChineseCharacters:
+                    break;
+                case LevelThemeName.WordParts:
+                    break;
+                case LevelThemeName.Pharse:
+                    break;
+                case LevelThemeName.SameMeaning:
+                    break;
+                case LevelThemeName.Emoji:
+                    break;
+                case LevelThemeName.EmojiParts:
+                    break;
+                case LevelThemeName.WordsAndPics:
+                    break;
+                case LevelThemeName.Colors:
+                    break;
+                case LevelThemeName.ColorShades:
+                    break;
+                case LevelThemeName.FastLowPolyPics:
+                    break;
+                case LevelThemeName.Puzzles:
+                    break;
+                case LevelThemeName.Pictures:
+                    break;
+                case LevelThemeName.BonusCraft:
+                    break;
+                case LevelThemeName.BonusStylus:
+                    break;
+                default:
+                    throw new ArgumentException("Invalid Level Theme");
+                    break;
+            }         
+
+            DynamicData = new DynamicData(levelId);
         }
         // Level Constructor 2 (test?)
         public Level(int[] levelId)
@@ -100,7 +152,7 @@ namespace Data
                 case LevelThemeName.SimpleFigures:
                     break;
                 case LevelThemeName.Numerals:
-                    LevelDictionary = new NumbersDictionary();
+                    LevelDictionary = new Numerals();
                     break;
                 case LevelThemeName.TagGame:
                     break;
@@ -111,7 +163,7 @@ namespace Data
                 case LevelThemeName.RomanNumerals:
                     break;
                 case LevelThemeName.EnglishAlphabet:
-                    LevelDictionary = new AlphabetDictionary();
+                    LevelDictionary = new EnglishAlphabet();
                     break;
                 case LevelThemeName.ChineseCharacters:
                     break;
@@ -308,7 +360,6 @@ namespace Data
         public int BestPlayerScore { get; private set; }            // values for dynamic difficulty
         public int MiddlePlayerScore { get; private set; }
         public int GoalForPlayerScore { get; internal set; }        // set dinamic difficulty from previous values
-
         public float[] PlayerTime { get; private set; }             // keeps data how fast win condition for player
         public float BestPlayerTime { get; private set; }           // only for win condition, where faster is better
         public float MiddlePlayerTime { get; private set; }         // only win condition
@@ -317,6 +368,11 @@ namespace Data
         public DynamicData(int[] levelId)
         {
             IsOpened = (levelId[0] == 0 && levelId[1] == 0 && levelId[2] == 0);
+        }
+
+        public void OpenLevel()
+        {
+            IsOpened = true;
         }
     }
 

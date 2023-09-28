@@ -77,6 +77,18 @@ public /*sealed */class GameManager : MonoBehaviour
     {
         _levels = LevelFactory.SetUpLevels();
         levelsDict = LevelFactory.ConverLevelListToDictionary(_levels);
+
+        var levels = levelsDict.Values
+            .SelectMany(x => x.Values)
+            .SelectMany(x => x)
+            .Where(x => x.LevelDictionary != null)
+            .ToList();
+
+        foreach (var level in levels)
+        {
+            Debug.Log(level.LevelDictionary.GetData());
+        }
+
         // PrepareLevelsList();
         // LoadPlayerData();
         // LoadOptionsData();                                       // Sound, Music and etc.
