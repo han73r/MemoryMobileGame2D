@@ -21,6 +21,25 @@ namespace Data
         public LevelNumber LevelNumber { get; private set; }        // set playground size  3rd int
         public LevelDictionary LevelDictionary { get; private set; }
         public DynamicData DynamicData { get; private set; }
+        public void OpenLevel()
+        {
+            if (CanOpenLevel())
+            {
+                DynamicData.OpenLevel();
+            }
+            else
+            {
+                Debug.LogError("Unable to open level: missing or empty LevelDictionary.");
+            }
+        }
+        public void CloseLevel()
+        {
+            DynamicData.CloseLevel();
+        }
+        private bool CanOpenLevel()
+        {
+            return LevelDictionary != null && !string.IsNullOrEmpty(LevelDictionary.GetData());
+        }
 
         // Level Constructor to create level List
         public Level(int[] levelId, LevelNumber levelNumber)
@@ -36,7 +55,7 @@ namespace Data
                     throw new ArgumentException($"Each element in LevelId should be equal or bigger than {MinIdValue}.");
                 }
             }                       // Check
-            
+
             LevelId = levelId;
             Theme = levelId[0];
             Type = levelId[1];
@@ -114,7 +133,7 @@ namespace Data
                 default:
                     throw new ArgumentException("Invalid Level Theme");
                     break;
-            }         
+            }
 
             DynamicData = new DynamicData(levelId);
         }
@@ -373,6 +392,11 @@ namespace Data
         public void OpenLevel()
         {
             IsOpened = true;
+        }
+
+        public void CloseLevel()
+        {
+            IsOpened = false;
         }
     }
 

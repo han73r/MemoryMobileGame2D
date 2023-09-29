@@ -73,21 +73,49 @@ public /*sealed */class GameManager : MonoBehaviour
         //LevelFactory.CreateLevel(levelId);
     }
 
+    // Open.. 
+    private void OpenTheme(LevelThemeName themeName)
+    {
+        //TASK // Open Theme and first Type that have dictionary!
+        // if cant - show message about it
+        if (!levelsDict.TryGetValue(themeName, out var levelTypes))
+        {
+            Debug.LogError($"Theme '{themeName}' not found in levels dictionary.");
+            return;
+        }
+
+        foreach (var levelType in levelTypes.Values)
+        {
+            foreach (var level in levelType)
+            {
+                if (level.LevelDictionary != null && !string.IsNullOrEmpty(level.LevelDictionary.GetData()))
+                {
+                    level.OpenLevel();
+                }
+            }
+        }
+
+        // Check if at least one level is opened in this theme
+        if (levelTypes.Values.SelectMany(x => x).Any(x => x.DynamicData.IsOpened))
+        {
+            my_menuManager.CreateThemeButtons(levelsDict);
+        }
+        else
+        {
+            Debug.Log("No levels available for opening in this theme.");
+        }
+    }
+
+    private void OpenTheme(LevelTypeName typeName)
+    {
+        //TASK // Open Level Type in current theme
+        //TASK // add status, to know which theme is opened
+    }
+
     private void LoadGameData()
     {
         _levels = LevelFactory.SetUpLevels();
         levelsDict = LevelFactory.ConverLevelListToDictionary(_levels);
-
-        var levels = levelsDict.Values
-            .SelectMany(x => x.Values)
-            .SelectMany(x => x)
-            .Where(x => x.LevelDictionary != null)
-            .ToList();
-
-        foreach (var level in levels)
-        {
-            Debug.Log(level.LevelDictionary.GetData());
-        }
 
         // PrepareLevelsList();
         // LoadPlayerData();
