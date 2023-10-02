@@ -23,14 +23,8 @@ namespace Data
         public DynamicData DynamicData { get; private set; }
         public void OpenLevel()
         {
-            if (CanOpenLevel())
-            {
-                DynamicData.OpenLevel();
-            }
-            else
-            {
-                Debug.LogError("Unable to open level: missing or empty LevelDictionary.");
-            }
+            if (CanOpenLevel()) DynamicData.OpenLevel();
+            else Debug.LogError("Unable to open level: missing or empty LevelDictionary.");
         }
         public void CloseLevel()
         {
@@ -40,7 +34,7 @@ namespace Data
         {
             return LevelDictionary != null && !string.IsNullOrEmpty(LevelDictionary.GetData());
         }
-
+        // QUESTION // Can we Leave only one constructor 
         // Level Constructor to create level List
         public Level(int[] levelId, LevelNumber levelNumber)
         {
@@ -132,12 +126,11 @@ namespace Data
                     break;
                 default:
                     throw new ArgumentException("Invalid Level Theme");
-                    break;
             }
 
             DynamicData = new DynamicData(levelId);
         }
-        // Level Constructor 2 (test?)
+        // Level Constructor 2 (for reach max level)
         public Level(int[] levelId)
         {
             LevelId = levelId;
@@ -214,7 +207,6 @@ namespace Data
                     break;
                 default:
                     throw new ArgumentException("Invalid Level Theme");
-                    break;
             }
         }
     }

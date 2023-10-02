@@ -39,6 +39,29 @@ public class MenuManager : MonoBehaviour
         }
     }
 
+    public void UpdateThemeButtonsAvailability(Dictionary<LevelThemeName, Dictionary<LevelTypeName, List<Level>>> levelsDict)
+    {
+        foreach (var theme in levelsDict.Keys)
+        {
+            bool isOpenedLevelExists = levelsDict[theme].Any(typeLevels => typeLevels.Value.Any(level => level.DynamicData.IsOpened));
+            Button themeButton = GetThemeButtonByThemeName(theme);
+            themeButton.interactable = isOpenedLevelExists;
+        }
+    }
+    private Button GetThemeButtonByThemeName(LevelThemeName themeName)
+    {
+        foreach (Transform button in _themeButtonContainer)
+        {
+            Button themeButton = button.GetComponent<Button>();
+            TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
+
+            if (buttonText.text == themeName.ToString())
+            {
+                return themeButton;
+            }
+        }
+        return null;
+    }
     private void OnThemeButtonClicked(LevelThemeName selectedTheme)
     {
         Debug.Log("Selected Theme: " + selectedTheme.ToString());
@@ -68,12 +91,10 @@ public class MenuManager : MonoBehaviour
             button.onClick.AddListener(() => OnLevelTypeButtonClicked(levelType));
         }
     }
-
     private void OnLevelTypeButtonClicked(LevelTypeName selectedType)
     {
         Debug.Log("Selected Type: " + selectedType.ToString());
     }
-
     public void GoBack()
     {
         switch (currentMenuLevel)
@@ -106,4 +127,5 @@ public class MenuManager : MonoBehaviour
                 break;
         }
     }
+
 }

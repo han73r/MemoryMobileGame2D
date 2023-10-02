@@ -25,7 +25,7 @@ public /*sealed */class GameManager : MonoBehaviour
         get
         {
             lock (lockObject)
-            {
+            {   
                 if (instance == null)
                 {
                     instance = new GameManager();
@@ -47,10 +47,18 @@ public /*sealed */class GameManager : MonoBehaviour
     //private static int _maxLevel;
     //private static int[] _currentLevel;
 
-    // TASK // DDOL
-
     private void Awake()
     {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        DontDestroyOnLoad(gameObject);
         LoadGameData();
     }
 
@@ -74,7 +82,7 @@ public /*sealed */class GameManager : MonoBehaviour
     }
 
     // Open.. 
-    private void OpenTheme(LevelThemeName themeName)
+    public void OpenTheme(LevelThemeName themeName)
     {
         //TASK // Open Theme and first Type that have dictionary!
         // if cant - show message about it
@@ -94,17 +102,29 @@ public /*sealed */class GameManager : MonoBehaviour
                 }
             }
         }
-
-        // Check if at least one level is opened in this theme
-        if (levelTypes.Values.SelectMany(x => x).Any(x => x.DynamicData.IsOpened))
-        {
-            my_menuManager.CreateThemeButtons(levelsDict);
-        }
-        else
-        {
-            Debug.Log("No levels available for opening in this theme.");
-        }
+        my_menuManager.UpdateThemeButtonsAvailability(levelsDict);
     }
+    public void CloseTheme(LevelThemeName themeName)
+    {
+        if (!levelsDict.TryGetValue(themeName, out var levelTypes))
+        {
+            Debug.LogError($"Theme '{themeName}' not found in levels dictionary.");
+            return;
+        }
+
+        foreach (var levelType in levelTypes.Values)
+        {
+            foreach (var level in levelType)
+            {
+                if (level.LevelDictionary != null && !string.IsNullOrEmpty(level.LevelDictionary.GetData()))
+                {
+                    level.CloseLevel();
+                }
+            }
+        }
+        my_menuManager.UpdateThemeButtonsAvailability(levelsDict);
+    }
+
 
     private void OpenTheme(LevelTypeName typeName)
     {
@@ -136,6 +156,10 @@ public /*sealed */class GameManager : MonoBehaviour
         // if exists!
         // adding level to currentLevel or some other system
     }
+
+
+
+
 
     public Level CreateLevel(int[] levelId)
     {

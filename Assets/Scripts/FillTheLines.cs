@@ -55,7 +55,7 @@ public class FillTheLines : MonoBehaviour
 
     #region Readonly
     private readonly string _alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private readonly string _numbers = "0987654321";
+    //private readonly string _numbers = "0987654321";
     #endregion
 
     #region Private
