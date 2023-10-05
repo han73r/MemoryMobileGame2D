@@ -23,17 +23,18 @@ namespace Data
         public DynamicData DynamicData { get; private set; }
         public void OpenLevel()
         {
-            if (CanOpenLevel()) DynamicData.OpenLevel();
-            else Debug.LogError("Unable to open level: missing or empty LevelDictionary.");
+            DynamicData.OpenLevel();
+            //if (CanOpenLevel()) DynamicData.OpenLevel();
+            //else Debug.LogError("Unable to open level: missing or empty LevelDictionary."); // double check?
         }
         public void CloseLevel()
         {
             DynamicData.CloseLevel();
         }
-        private bool CanOpenLevel()
-        {
-            return LevelDictionary != null && !string.IsNullOrEmpty(LevelDictionary.GetData());
-        }
+        //private bool CanOpenLevel()
+        //{
+        //    return LevelDictionary != null && !string.IsNullOrEmpty(LevelDictionary.GetData());
+        //}
         // QUESTION // Can we Leave only one constructor 
         // Level Constructor to create level List
         public Level(int[] levelId, LevelNumber levelNumber)
@@ -378,7 +379,8 @@ namespace Data
 
         public DynamicData(int[] levelId)
         {
-            IsOpened = (levelId[0] == 0 && levelId[1] == 0 && levelId[2] == 0);
+            
+            //IsOpened = (levelId[0] == 0 && levelId[1] == 0 && levelId[2] == 0);
         }
 
         public void OpenLevel()

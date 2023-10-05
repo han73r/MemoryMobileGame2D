@@ -81,29 +81,50 @@ public /*sealed */class GameManager : MonoBehaviour
         //LevelFactory.CreateLevel(levelId);
     }
 
-    // Open.. 
+
     public void OpenTheme(LevelThemeName themeName)
     {
-        //TASK // Open Theme and first Type that have dictionary!
-        // if cant - show message about it
         if (!levelsDict.TryGetValue(themeName, out var levelTypes))
         {
-            Debug.LogError($"Theme '{themeName}' not found in levels dictionary.");
+            Debug.LogError($"There's no such theme name '{themeName}'");
             return;
         }
 
+        bool isOpenedLevelExists = false;
         foreach (var levelType in levelTypes.Values)
         {
+            bool isOpenedLevelType = false;
             foreach (var level in levelType)
             {
                 if (level.LevelDictionary != null && !string.IsNullOrEmpty(level.LevelDictionary.GetData()))
                 {
                     level.OpenLevel();
+                    isOpenedLevelExists = true;
+                    isOpenedLevelType = true;
+                }
+                else
+                {
+                    Debug.LogError("Unable to open level: missing or empty LevelDictionary.");
+                    break;
                 }
             }
+
+            if (!isOpenedLevelType)
+            {
+                break;
+            }
         }
-        my_menuManager.UpdateThemeButtonsAvailability(levelsDict);
+
+        if (isOpenedLevelExists)
+        {
+            my_menuManager.UpdateThemeButtonsAvailability(levelsDict);
+        }
+        else
+        {
+            Debug.Log("No levels available for opening in this theme.");
+        }
     }
+
     public void CloseTheme(LevelThemeName themeName)
     {
         if (!levelsDict.TryGetValue(themeName, out var levelTypes))
@@ -156,10 +177,6 @@ public /*sealed */class GameManager : MonoBehaviour
         // if exists!
         // adding level to currentLevel or some other system
     }
-
-
-
-
 
     public Level CreateLevel(int[] levelId)
     {

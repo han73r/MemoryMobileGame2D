@@ -10,9 +10,8 @@ public class DebugTool : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _consoleText;
     [SerializeField] private GameObject _consoleGO;
 
-    private List<string> commandHistory = new List<string>();
-    private int _currentHistoryIndex = -1;
     private bool _isConsoleVisible = false;
+    private const int maxCommandWidth = 25;
 
     void Start()
     {
@@ -30,28 +29,11 @@ public class DebugTool : MonoBehaviour
         }
     }
 
-    //private void OnInputFieldValueChanged(string newValue)
-    //{
-    //    if (Input.GetKeyDown(KeyCode.UpArrow))
-    //    {
-    //        ShowPreviousCommand();
-    //    }
-    //    else if (Input.GetKeyDown(KeyCode.DownArrow))
-    //    {
-    //        ShowNextCommand();
-    //    }
-    //    // TASK // may use for autoadding command
-    //}
-
     private void OnInputFieldEndEdit(string inputText)
     {
         ClearConsole();
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
         {
-            // history
-            commandHistory.Add(inputText);
-            _currentHistoryIndex = -1;
-
             string[] inputParts = inputText.Split(' ');
 
             if (inputParts.Length > 0)
@@ -63,8 +45,6 @@ public class DebugTool : MonoBehaviour
                     case "help":
                         DisplayHelp();
                         break;
-                    //TASK // add open level
-                    // TASK // add close theme and level
                     case "open":                        
                         if (inputParts.Length >= 2)
                         {
@@ -102,18 +82,30 @@ public class DebugTool : MonoBehaviour
     private void DisplayHelp()
     {
         LogToConsole("Available commands:");
-        LogToConsole("'help'                     \t\t\t- Display list of commands");
-        LogToConsole("'open [themeName]'    \t- Open a theme by name");
-        LogToConsole("'close [themeName]'    \t- Close a theme by name");
-        LogToConsole("'theme'                    \t\t- List of avaliable themes");
+        LogToConsole("'help'", "Display list of commands");
+        LogToConsole("'open [themeName]'", "Open a theme by name");
+        LogToConsole("'close [themeName]'", "Close a theme by name");
+        LogToConsole("'theme'", "List of available themes");
     }
 
+    private void LogToConsole(string command, string description)
+    {
+        int paddingWidth = maxCommandWidth - command.Length;
+        var padding = new string(' ', paddingWidth);
+
+        string formattedText = $"{command}{padding} - {description}";
+        _consoleText.text += formattedText + "\n";
+    }
+    private void LogToConsole(string message)
+    {
+        _consoleText.text += message + "\n";
+    }
     private void OpenTheme(string themeName)
     {
         if (Enum.TryParse(themeName, true, out LevelThemeName theme))
         {
-            GameManager.Instance.OpenTheme(theme);
             Debug.Log($"Opening theme: {theme}");
+            GameManager.Instance.OpenTheme(theme);         
         }
         else
         {
@@ -140,10 +132,7 @@ public class DebugTool : MonoBehaviour
             LogToConsole(theme.ToString());
         }
     }
-    private void LogToConsole(string message)
-    {
-        _consoleText.text += message + "\n";
-    }
+
     private void ClearConsole()
     {
         _consoleText.text = "";
@@ -161,36 +150,4 @@ public class DebugTool : MonoBehaviour
 
         _isConsoleVisible = !_isConsoleVisible;
     }
-    public enum ConsoleCommand
-    {
-        Help,
-        OpenTheme,
-        CloseTheme
-    }
-
-    //private void ShowPreviousCommand()
-    //{
-    //    if (commandHistory.Count > 0)
-    //    {
-    //        currentHistoryIndex = Mathf.Clamp(currentHistoryIndex + 1, 0, commandHistory.Count - 1);
-    //        _inputField.text = commandHistory[currentHistoryIndex];
-    //    }
-    //}
-
-    //private void ShowNextCommand()
-    //{
-    //    if (commandHistory.Count > 0)
-    //    {
-    //        currentHistoryIndex = Mathf.Clamp(currentHistoryIndex - 1, -1, commandHistory.Count - 1);
-    //        if (currentHistoryIndex == -1)
-    //        {
-    //            _inputField.text = "";
-    //        }
-    //        else
-    //        {
-    //            _inputField.text = commandHistory[currentHistoryIndex];
-    //        }
-    //    }
-    //}
-
 }
