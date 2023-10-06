@@ -16,7 +16,7 @@ using System.Linq;
 /// </summary>
 public /*sealed */class GameManager : MonoBehaviour
 {
-    #region Singleton                                                   // thread safe Singleton
+    #region thread safe Singleton
     private static readonly object lockObject = new object();
     private static GameManager instance = null;
     private GameManager() { }
@@ -36,8 +36,9 @@ public /*sealed */class GameManager : MonoBehaviour
         }
     }
     #endregion
-
-    [SerializeField] private MenuManager my_menuManager;
+    
+    [SerializeField] private MenuManager my_MenuManager;
+    [SerializeField] private LevelConstructorManager my_LevelConstructorManager;
 
     //TASK // Set to Props with Get; private set
     //TASK // Or Set as readonly I want to protect levels!
@@ -61,8 +62,6 @@ public /*sealed */class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         LoadGameData();
     }
-
-
     private void Start()
     {
         CreateMainMenu();
@@ -73,15 +72,34 @@ public /*sealed */class GameManager : MonoBehaviour
         //CreateLevel();
         //CreateNextLevel();
 
-        int[] firstlevel = { 0, 0, 0 };
-        CreateLevel(firstlevel);
+        //int[] firstlevel = { 0, 0, 0 };
+        //CreateLevel(firstlevel);
 
         //int[] levelId = { 0,0,0};
         // TASK // Should know, what level you should create
         //LevelFactory.CreateLevel(levelId);
     }
+    private void LoadGameData()
+    {
+        _levels = LevelFactory.SetUpLevels();
+        levelsDict = LevelFactory.ConverLevelListToDictionary(_levels);
 
+        // PrepareLevelsList();
+        // LoadPlayerData();
+        // LoadOptionsData();                                       // Sound, Music and etc.
+        Debug.Log("StopHere");
+    }
 
+    public void CreateLevel(Level level)
+    {
+        my_MenuManager.StartNewLevel(true);
+        my_LevelConstructorManager.CreateLevel(level);
+    }
+
+    public void DestroyLevel()
+    {
+        my_LevelConstructorManager.DestroyLevel();
+    }
     public void OpenTheme(LevelThemeName themeName)
     {
         if (!levelsDict.TryGetValue(themeName, out var levelTypes))
@@ -117,14 +135,13 @@ public /*sealed */class GameManager : MonoBehaviour
 
         if (isOpenedLevelExists)
         {
-            my_menuManager.UpdateThemeButtonsAvailability(levelsDict);
+            my_MenuManager.UpdateThemeButtonsAvailability(levelsDict);
         }
         else
         {
             Debug.Log("No levels available for opening in this theme.");
         }
     }
-
     public void CloseTheme(LevelThemeName themeName)
     {
         if (!levelsDict.TryGetValue(themeName, out var levelTypes))
@@ -143,41 +160,32 @@ public /*sealed */class GameManager : MonoBehaviour
                 }
             }
         }
-        my_menuManager.UpdateThemeButtonsAvailability(levelsDict);
+        my_MenuManager.UpdateThemeButtonsAvailability(levelsDict);
     }
 
-
-    private void OpenTheme(LevelTypeName typeName)
+    // TASK // Realize
+    private void OpenType(LevelTypeName typeName)
     {
         //TASK // Open Level Type in current theme
         //TASK // add status, to know which theme is opened
     }
+    private void CloseType(LevelTypeName typeName) { }
 
-    private void LoadGameData()
-    {
-        _levels = LevelFactory.SetUpLevels();
-        levelsDict = LevelFactory.ConverLevelListToDictionary(_levels);
 
-        // PrepareLevelsList();
-        // LoadPlayerData();
-        // LoadOptionsData();                                       // Sound, Music and etc.
-        Debug.Log("StopHere");
-    }
     private void CreateMainMenu()
     {
         // TASK // Add MenuManager method
     }
     private void CreateThemeMenu()
     {
-        my_menuManager.CreateThemeButtons(levelsDict);
+        my_MenuManager.CreateThemeButtons(levelsDict);
     }
 
     public void CreateNextLevel()
     {
         // if exists!
         // adding level to currentLevel or some other system
-    }
-
+    }       // from current level // check if you can create level or not
     public Level CreateLevel(int[] levelId)
     {
         return new Level(levelId);

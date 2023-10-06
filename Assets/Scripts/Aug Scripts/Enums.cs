@@ -59,6 +59,7 @@ namespace Data
     {
         Main,
         Theme,
-        Type
+        Type,
+        InGame
     }
 }

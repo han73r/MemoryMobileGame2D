@@ -14,7 +14,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Transform _themeButtonContainer;
     [SerializeField] private Transform _typeButtonContainer;
 
-    private MenuLevel currentMenuLevel = MenuLevel.Main;
+    private static MenuLevel currentMenuLevel = MenuLevel.Main;
     //[SerializeField] private ScrollRect _scrollRect;              // TASK // ADD for swiping between Themes
 
     public void CreateThemeButtons(Dictionary<LevelThemeName, Dictionary<LevelTypeName, List<Level>>> levelsDict)
@@ -38,7 +38,6 @@ public class MenuManager : MonoBehaviour
             button.onClick.AddListener(() => OnThemeButtonClicked(tempTheme));
         }
     }
-
     public void UpdateThemeButtonsAvailability(Dictionary<LevelThemeName, Dictionary<LevelTypeName, List<Level>>> levelsDict)
     {
         foreach (var theme in levelsDict.Keys)
@@ -47,6 +46,11 @@ public class MenuManager : MonoBehaviour
             Button themeButton = GetThemeButtonByThemeName(theme);
             themeButton.interactable = isOpenedLevelExists;
         }
+    }
+    public void StartNewLevel(bool isActive)
+    {
+        Tool.SetTransformActive(_typeButtonContainer, !isActive);
+        if (isActive) { currentMenuLevel = MenuLevel.InGame; }
     }
     private Button GetThemeButtonByThemeName(LevelThemeName themeName)
     {
@@ -62,13 +66,6 @@ public class MenuManager : MonoBehaviour
         }
         return null;
     }
-    private void OnThemeButtonClicked(LevelThemeName selectedTheme)
-    {
-        Debug.Log("Selected Theme: " + selectedTheme.ToString());
-        Tool.RemoveChildObjects(_themeButtonContainer);
-        CreateSubmenu(selectedTheme);
-    }
-
     private void CreateSubmenu(LevelThemeName selectedTheme)
     {
         currentMenuLevel = MenuLevel.Type;
@@ -78,22 +75,42 @@ public class MenuManager : MonoBehaviour
         foreach (var levelType in levelTypesForTheme.Keys)
         {
             // At least one level should be IsOpened = true to active the Type button
-            bool isOpenedLevelExists = levelTypesForTheme[levelType].Any(level => level.DynamicData.IsOpened);
+            //bool isOpenedLevelExists = levelTypesForTheme[levelType].Any(level => level.DynamicData.IsOpened);
+            var openedLevel = levelTypesForTheme[levelType].FirstOrDefault(level => level.DynamicData.IsOpened);
+            if (openedLevel != null)
+            {
+                GameObject buttonGO = Instantiate(_typeButtonPrefab, _themeButtonContainer);
+                Button button = buttonGO.GetComponent<Button>();
+                TextMeshProUGUI buttonText = buttonGO.GetComponentInChildren<TextMeshProUGUI>();
 
-            GameObject buttonGO = Instantiate(_typeButtonPrefab, _themeButtonContainer);
-            Button button = buttonGO.GetComponent<Button>();
-            TextMeshProUGUI buttonText = buttonGO.GetComponentInChildren<TextMeshProUGUI>();
+                buttonText.text = levelType.ToString();
 
-            buttonText.text = levelType.ToString();
+                button.interactable = true; // The button is interactable because we found an opened level
 
-            button.interactable = isOpenedLevelExists;
+                // Capture the openedLevel in a closure and pass it to OnLevelTypeButtonClicked
+                Level level = openedLevel;
 
-            button.onClick.AddListener(() => OnLevelTypeButtonClicked(levelType));
+                button.onClick.AddListener(() =>
+                {
+                    OnLevelTypeButtonClicked(level);
+                });
+            }
+            else
+            {
+                // Handle the case when there are no opened levels of this type
+            }
         }
     }
-    private void OnLevelTypeButtonClicked(LevelTypeName selectedType)
+    private void OnThemeButtonClicked(LevelThemeName selectedTheme)
     {
-        Debug.Log("Selected Type: " + selectedType.ToString());
+        Debug.Log("Selected Theme: " + selectedTheme.ToString());
+        Tool.RemoveChildObjects(_themeButtonContainer);
+        CreateSubmenu(selectedTheme);
+    }
+    private void OnLevelTypeButtonClicked(Level level)
+    {
+        Debug.Log("Selected Type: " + level.TypeName);
+        GameManager.Instance.CreateLevel(level);
     }
     public void GoBack()
     {
@@ -122,6 +139,11 @@ public class MenuManager : MonoBehaviour
                 Tool.RemoveChildObjects(_typeButtonContainer);
                 CreateThemeButtons(GameManager.levelsDict);
                 currentMenuLevel = MenuLevel.Theme;
+                break;
+            case MenuLevel.InGame:
+                StartNewLevel(false);
+                GameManager.Instance.DestroyLevel();
+                currentMenuLevel = MenuLevel.Type;
                 break;
             default:
                 break;

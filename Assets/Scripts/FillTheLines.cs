@@ -13,44 +13,22 @@ public class FillTheLines : MonoBehaviour
     #region Variables
     #region SerializeField
     [Header("GO and prefabs")]
-    [SerializeField]
-    private GameObject _grid;
-
-    [SerializeField]
-    private GameObject _gridRowPrefab;
-
-    [SerializeField]
-    private GameObject _iconPrefab;
+    [SerializeField] private GameObject             _grid;
+    [SerializeField] private GameObject             _gridRowPrefab;
+    [SerializeField] private GameObject             _iconPrefab;
 
     [Header("Lists")]
-    [SerializeField]
-    private List<GameObject> _myTextFieldsGOList;
-
-    [SerializeField]
-    private List<GameObject> _myRowGOList;
-
-    [SerializeField]
-    private List<TextMeshProUGUI> _myTextsList;
-
-    [SerializeField]
-    private List<Button> _myButtonsList;
+    [SerializeField] private List<GameObject>       _myTextFieldsGOList;
+    [SerializeField] private List<GameObject>       _myRowGOList;
+    [SerializeField] private List<TextMeshProUGUI>  _myTextsList;
+    [SerializeField] private List<Button>           _myButtonsList;
 
     [Header("Dynamic size of game table")]
-    [SerializeField]
-    private int _row = 5;
-
-    [SerializeField]
-    private int _coloumn = 5;
-
-    [SerializeField]
-    private int _matchesFound;
-
-    [SerializeField]
-    private TextMeshProUGUI _levelNumberText;
-
-    [SerializeField]
-    private TextMeshProUGUI _pointsNumberText;
-
+    [SerializeField] private int                    _row = 5;
+    [SerializeField] private int                    _coloumn = 5;
+    [SerializeField] private int                    _matchesFound;
+    [SerializeField] private TextMeshProUGUI        _levelNumberText;
+    [SerializeField] private TextMeshProUGUI        _pointsNumberText;
     #endregion
 
     #region Readonly
@@ -59,13 +37,13 @@ public class FillTheLines : MonoBehaviour
     #endregion
 
     #region Private
-    private int _maxMatches;
-    private int _levelNumber = 1;       // start level
-    private List<char> _gameList;       // double any input values
-    private bool _findingMatch;
-    private GameObject _lastGoClicked;
-    private String _lastClickedText;
-    private int _pointsNumber = 0;      // start points
+    private int             _maxMatches;
+    private int             _levelNumber = 1;       // start level
+    private List<char>      _gameList;              // double any input values
+    private bool            _findingMatch;
+    private GameObject      _lastGoClicked;
+    private String          _lastClickedText;
+    private int             _pointsNumber = 0;      // start points
     #endregion
     #endregion
 

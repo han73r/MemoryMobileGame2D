@@ -2,7 +2,6 @@ using UnityEngine;
 using Data;
 using TMPro;
 using System;
-using System.Collections.Generic;
 
 public class DebugTool : MonoBehaviour
 {
@@ -19,7 +18,6 @@ public class DebugTool : MonoBehaviour
         _inputField.onEndEdit.AddListener(OnInputFieldEndEdit);                 // for commands
         ClearConsole();
     }
-
     private void Update()
     {
         // use (~) key to open cosole
@@ -28,7 +26,6 @@ public class DebugTool : MonoBehaviour
             ToggleConsoleVisibility();
         }
     }
-
     private void OnInputFieldEndEdit(string inputText)
     {
         ClearConsole();
@@ -78,7 +75,6 @@ public class DebugTool : MonoBehaviour
             }
         }
     }
-
     private void DisplayHelp()
     {
         LogToConsole("Available commands:");
@@ -87,7 +83,6 @@ public class DebugTool : MonoBehaviour
         LogToConsole("'close [themeName]'", "Close a theme by name");
         LogToConsole("'theme'", "List of available themes");
     }
-
     private void LogToConsole(string command, string description)
     {
         int paddingWidth = maxCommandWidth - command.Length;
@@ -132,7 +127,6 @@ public class DebugTool : MonoBehaviour
             LogToConsole(theme.ToString());
         }
     }
-
     private void ClearConsole()
     {
         _consoleText.text = "";

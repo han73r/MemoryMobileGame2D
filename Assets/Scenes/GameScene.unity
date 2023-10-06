@@ -2182,6 +2182,7 @@ GameObject:
   - component: {fileID: 1552312876}
   - component: {fileID: 1552312877}
   - component: {fileID: 1552312878}
+  - component: {fileID: 1552312880}
   - component: {fileID: 1552312879}
   m_Layer: 0
   m_Name: Game Manager (S) (DDOL)
@@ -2255,7 +2256,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09181f701b5f31842ae9c8cff7423a0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  my_menuManager: {fileID: 1552312878}
+  my_MenuManager: {fileID: 1552312878}
+  my_LevelConstructorManager: {fileID: 1552312880}
 --- !u!114 &1552312878
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2287,6 +2289,30 @@ MonoBehaviour:
   _inputField: {fileID: 1449693436}
   _consoleText: {fileID: 2109924134}
   _consoleGO: {fileID: 1236855339}
+--- !u!114 &1552312880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1552312873}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a008211266256014cb155504bd472478, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _grid: {fileID: 712451758}
+  _gridRowPrefab: {fileID: 7346970793907081591, guid: b85d889348cd9254e8c5585a7d2ac9bd, type: 3}
+  _iconPrefab: {fileID: 317025799524593757, guid: ee6d4f8f865e52b409c37a8a49fdaa0b, type: 3}
+  _myTextFieldsGOList: []
+  _myRowGOList: []
+  _myTextsList: []
+  _myButtonsList: []
+  _row: 5
+  _coloumn: 5
+  _matchesFound: 0
+  _levelNumberText: {fileID: 1776973721}
+  _pointsNumberText: {fileID: 649473144}
 --- !u!1 &1729080315
 GameObject:
   m_ObjectHideFlags: 0
