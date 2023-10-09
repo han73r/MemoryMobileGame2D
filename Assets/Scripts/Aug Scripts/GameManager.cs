@@ -45,6 +45,7 @@ public /*sealed */class GameManager : MonoBehaviour
     // Values
     private static List<Level> _levels;                         // All levels list using Screen Resolution
     public static Dictionary<LevelThemeName, Dictionary<LevelTypeName, List<Level>>> levelsDict { get; private set; }
+      
     //private static int _maxLevel;
     //private static int[] _currentLevel;
 
@@ -61,7 +62,20 @@ public /*sealed */class GameManager : MonoBehaviour
         }
         DontDestroyOnLoad(gameObject);
         LoadGameData();
+        SubscribeOnLevelCompleted();
     }
+    private void SubscribeOnLevelCompleted()
+    {
+        if (my_LevelConstructorManager != null)
+        {
+            my_LevelConstructorManager.LevelCompleted += OnLevelCompleted;
+        }
+        else
+        {
+            Debug.LogError("GameManager couldn't subscribe on levelConstructorManager");
+        }
+    }
+
     private void Start()
     {
         CreateMainMenu();
@@ -90,16 +104,25 @@ public /*sealed */class GameManager : MonoBehaviour
         Debug.Log("StopHere");
     }
 
+    private void CreateMainMenu()
+    {
+        // TASK // Add MenuManager method
+    }
+    private void CreateThemeMenu()
+    {
+        my_MenuManager.CreateThemeButtons(levelsDict);
+    }
+
     public void CreateLevel(Level level)
     {
         my_MenuManager.StartNewLevel(true);
         my_LevelConstructorManager.CreateLevel(level);
     }
-
     public void DestroyLevel()
     {
         my_LevelConstructorManager.DestroyLevel();
     }
+
     public void OpenTheme(LevelThemeName themeName)
     {
         if (!levelsDict.TryGetValue(themeName, out var levelTypes))
@@ -163,6 +186,7 @@ public /*sealed */class GameManager : MonoBehaviour
         my_MenuManager.UpdateThemeButtonsAvailability(levelsDict);
     }
 
+
     // TASK // Realize
     private void OpenType(LevelTypeName typeName)
     {
@@ -171,21 +195,43 @@ public /*sealed */class GameManager : MonoBehaviour
     }
     private void CloseType(LevelTypeName typeName) { }
 
-
-    private void CreateMainMenu()
+    private void OnLevelCompleted(Level completedLevel)
     {
-        // TASK // Add MenuManager method
+        // TASK // Add lose condition later
+        bool isLastLevelInType = completedLevel.Number == _levels.Last().Number;    // сомнения, что это то, что надо
+        if (isLastLevelInType)
+        {
+            // know next level here
+            OpenLevelType(completedLevel); // set next level
+            DestroyLevel();                                                         // go to type menu, save, etc
+            // Open Next Level
+        }
+        else
+        {
+            // know next level here
+            DestroyLevel();
+            StartLevel(completedLevel);
+        }
     }
-    private void CreateThemeMenu()
+
+    private void OpenLevelType(Level currentLevel)
     {
-        my_MenuManager.CreateThemeButtons(levelsDict);
+        //Set Open to Next level
+    }
+    private void StartLevel(Level currentLevel)
+    {
+        Level nextLevel = GetNextLevel(currentLevel);
+        CreateLevel(nextLevel);
+    }
+    private Level GetNextLevel(Level currentLevel)
+    {
+        currentLevel.LevelId[currentLevel.LevelId.Length - 1]++;
+        Level nextLevel = _levels
+            .FirstOrDefault(level => Enumerable
+            .SequenceEqual(level.LevelId, currentLevel.LevelId));
+        return nextLevel;
     }
 
-    public void CreateNextLevel()
-    {
-        // if exists!
-        // adding level to currentLevel or some other system
-    }       // from current level // check if you can create level or not
     public Level CreateLevel(int[] levelId)
     {
         return new Level(levelId);
@@ -216,9 +262,4 @@ public /*sealed */class GameManager : MonoBehaviour
     {
         LevelFactory.CreateLevel(levelId, levelsDict);
     }
-    public void Test()
-    {
-
-    }
-
 }

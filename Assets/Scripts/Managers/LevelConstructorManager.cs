@@ -38,6 +38,7 @@ namespace Managers
         [SerializeField] private GameObject _grid;
         [SerializeField] private GameObject _gridRowPrefab;
         [SerializeField] private GameObject _iconPrefab;
+        
 
         [Header("Lists")]
         [SerializeField] private List<GameObject> _myTextFieldsGOList;
@@ -52,12 +53,17 @@ namespace Managers
         [SerializeField] private TextMeshProUGUI _levelNumberText;
         [SerializeField] private TextMeshProUGUI _pointsNumberText;
 
-        private int _maxMatches;
-        private int _levelNumber = 1;                                // start level
-        private List<char> _gameList;                                // double any input values
+
+        public event LevelCompletedEventHandler LevelCompleted;
+        public delegate void LevelCompletedEventHandler(Level completedLevel);
+
+        private int _maxMatches;                                    // count to end current level
+        private int _levelNumber = 1;                               // start level
+        private List<char> _gameList;                               // double any input values
         private bool _findingMatch;
-        private GameObject _lastGoClicked;
-        private int _pointsNumber = 0;                               // start points
+        private Level currentLevel;       
+        private int _pointsNumber = 0;                              // start points
+        private GameObject _lastClickedGO;
 
         private void Awake()
         {
@@ -94,10 +100,13 @@ namespace Managers
             _myTextsList = new();
             _myButtonsList = new();
             _myRowGOList = new();
+            currentLevel = level;
 
             int rows = level.LevelNumber.Rows;
             int columns = level.LevelNumber.Columns;
             var levelDictionary = level.LevelDictionary.GetData();
+
+            _maxMatches = rows * columns / 2;
 
             // TASK // Now it is a char but will be other options!
             // Create dictionary for game
@@ -120,14 +129,14 @@ namespace Managers
                     currentIndex++;
 
                     _myTextsList[_myTextsList.Count - 1].text = currentChar.ToString();
+
+                    // add buttons to list
+                    var btn = iconGO.GetComponent<Button>();
+                    btn.onClick.AddListener(delegate { IconClicked(iconGO); });
+                    _myButtonsList.Add(btn);
                 }
             }
         }
-
-        //// add buttons to list
-        //var btn = iconGO.GetComponent<Button>();
-        ////btn.onClick.AddListener(delegate { IconClicked(iconGO); });
-        //_myButtonsList.Add(btn);
 
         // TASK // Should be <T>
         private List<char> CreateCharDictionary(string stringDictionary, int rows, int columns)
@@ -147,37 +156,49 @@ namespace Managers
         }
 
         #region Player Input Commands
-        // TASK? // Переделать в ID? Чтобы не передавать целый GO, а одинаковым объектам одинаковый ID его быстрее проверить
-        //private static void IconClicked(GameObject iconGO)
-        //{
+        //TASK? // Переделать в ID? Чтобы не передавать целый GO, а одинаковым объектам одинаковый ID его быстрее проверить
+        // TASK // Add points counter
+        // TASK // Add UI updater
+        private void IconClicked(GameObject clickedGO)
+        {
+            if (_lastClickedGO == null)
+            {
+                // 
+                _lastClickedGO = clickedGO;
+                clickedGO.SetActive(false);
+            }
+            else
+            {
+                // Compare
+                TextMeshProUGUI selectedText = _lastClickedGO.GetComponent<TextMeshProUGUI>();
+                TextMeshProUGUI clickedText = clickedGO.GetComponent<TextMeshProUGUI>();
 
-        //    if (!_findingMatch)
-        //    {
-        //        iconGO.SetActive(false);
-        //        _lastGoClicked = iconGO;
+                if (selectedText.text == clickedText.text)
+                {
+                    _lastClickedGO.SetActive(false);
+                    clickedGO.SetActive(false);
+                    _maxMatches--;
+                }
+                else
+                {
+                    _lastClickedGO.SetActive(true);
+                    clickedGO.SetActive(true);
+                }
+                _lastClickedGO = null;
+            }
 
-        //        _lastClickedText = iconGO.GetComponent<TextMeshProUGUI>().text;
-        //        _findingMatch = true;
+            if (_maxMatches <= 0)
+            {
+                Debug.Log($"Level {currentLevel.LevelNumber} completed");
+                HandleLevelCompletion(currentLevel);                
+            }
+        }
 
-        //    }
-        //    else if (iconGO.GetComponent<TextMeshProUGUI>().text == _lastGoClicked.GetComponent<TextMeshProUGUI>().text)
-        //    {
-        //        iconGO.SetActive(false);
-        //        _findingMatch = false;
-        //        _matchesFound++;
-        //        _pointsNumber++;                // add points for right desicion
-        //        CheckIfLeveIsCompleted();
-        //        UpdateUI();
-        //    }
-        //    else
-        //    {
-        //        _lastGoClicked.SetActive(true);
-        //        _findingMatch = false;
-        //        _pointsNumber -= 3;             // remove points for wrong desicion
-        //        UpdateUI();
-        //    }
-        //}
+        private void HandleLevelCompletion(Level completedLevel)
+        {
+            LevelCompleted?.Invoke(completedLevel);
+        }
+
         #endregion
     }
-
 }
