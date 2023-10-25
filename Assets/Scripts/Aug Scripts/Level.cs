@@ -15,8 +15,7 @@ namespace Data
         public int Theme { get; private set; }                      // choosed dictionary   1st int
         public int Type { get; private set; }                       // set LevelType        2nd int
         public int Number { get; private set; }                     // set playground size     
-        public string ThemeName { get; private set; }
-        public string TypeName { get; private set; }                // take from enum
+        public LevelThemeName ThemeName { get; private set; }
         public LevelType LevelType { get; private set; }
         public LevelNumber LevelNumber { get; private set; }        // set playground size  3rd int
         public LevelDictionary LevelDictionary { get; private set; }
@@ -55,26 +54,27 @@ namespace Data
             Theme = levelId[0];
             Type = levelId[1];
             Number = levelId[2];
+            ThemeName = ((LevelThemeName)Theme);
 
-            if (Theme <= (Enum.GetValues(typeof(LevelThemeName)).Length))
-            {
-                ThemeName = ((LevelThemeName)Theme).ToString();
-            }
-            // TASK // But here we can change something
-            else
-            {
-                throw new ArgumentException("Invalid Theme value for ThemeName.");
-            }
+            //if (Theme <= (Enum.GetValues(typeof(LevelThemeName)).Length))
+            //{
+            //    ThemeName = ((LevelThemeName)Theme);
+            //}
+            //// TASK // But here we can change something
+            //else
+            //{
+            //    throw new ArgumentException("Invalid Theme value for ThemeName.");
+            //}
 
-            if (Type <= (Enum.GetValues(typeof(LevelTypeName)).Length))
-            {
-                TypeName = ((LevelTypeName)Type).ToString();
-            }
-            // TASK // But here we can change something
-            else
-            {
-                throw new ArgumentException("Invalid Theme value for ThemeName.");
-            }
+            //if (Type <= (Enum.GetValues(typeof(LevelTypeName)).Length))
+            //{
+            //    TypeName = ((LevelTypeName)Type).ToString();
+            //}
+            //// TASK // But here we can change something
+            //else
+            //{
+            //    throw new ArgumentException("Invalid Theme value for ThemeName.");
+            //}
 
             LevelType = new LevelType((LevelTypeName)Type);
             LevelNumber = levelNumber;
@@ -138,24 +138,25 @@ namespace Data
             Theme = levelId[0];                                         // may be too much but it is a bit easy than levelid[3]
             Type = levelId[1];                                          // but you can delete it if you want
             Number = levelId[2];
+            ThemeName = ((LevelThemeName)Theme);
 
             // TASK // What if value is bigger?
-            if (Theme <= (Enum.GetValues(typeof(LevelThemeName)).Length))
-            {
-                ThemeName = ((LevelThemeName)Theme).ToString();
-            }
-            else
-            {
-                throw new ArgumentException("Invalid Theme value for ThemeName.");
-            }
-            if (Type <= (Enum.GetValues(typeof(LevelTypeName)).Length))
-            {
-                TypeName = ((LevelTypeName)Type).ToString();
-            }
-            else
-            {
-                throw new ArgumentException("Invalid Theme value for ThemeName.");
-            }
+            //if (Theme <= (Enum.GetValues(typeof(LevelThemeName)).Length))
+            //{
+            //    ThemeName = ((LevelThemeName)Theme);
+            //}
+            //else
+            //{
+            //    throw new ArgumentException("Invalid Theme value for ThemeName.");
+            //}
+            //if (Type <= (Enum.GetValues(typeof(LevelTypeName)).Length))
+            //{
+            //    TypeName = ((LevelTypeName)Type).ToString();
+            //}
+            //else
+            //{
+            //    throw new ArgumentException("Invalid Theme value for ThemeName.");
+            //}
 
             LevelType = new LevelType((LevelTypeName)Type);
             LevelNumber = new LevelNumber(levelId[2]);
@@ -219,6 +220,7 @@ namespace Data
     /// </summary>
     public class LevelType
     {
+        public LevelTypeName Name { get; private set; }             
         public bool useTimer { get; internal set; }                 // even if bool is false timer used as hidden
         public bool useDynamicTimer { get; internal set; }          // count to zero
         public bool faceDownCards { get; internal set; }            // player start earn points here
@@ -226,68 +228,63 @@ namespace Data
         public bool opensItSelf { get; internal set; }              // faceDown + openItSelf only
         public LevelType(LevelTypeName typeName)
         {
+            Name = typeName;
             switch (typeName)
             {
-                case LevelTypeName.Simple:
-                    useTimer = false;
-                    useDynamicTimer = false;
-                    faceDownCards = false;
-                    burn = false;
-                    opensItSelf = false;
-                    break;
                 case LevelTypeName.Speed:
-                    useTimer = true;                                // here
-                    useDynamicTimer = false;
-                    faceDownCards = false;
-                    burn = false;
-                    opensItSelf = false;
-                    break;
-                case LevelTypeName.DynamicSpeed:
-                    useTimer = false;
-                    useDynamicTimer = true;                         // here
-                    faceDownCards = false;
-                    burn = false;
-                    opensItSelf = false;
-                    break;
-                case LevelTypeName.MemorySimple:
-                    useTimer = false;
-                    useDynamicTimer = false;
-                    faceDownCards = true;                           // here
-                    burn = false;
-                    opensItSelf = false;
-                    break;
                 case LevelTypeName.MemorySpeed:
-                    useTimer = true;                                // here
-                    useDynamicTimer = false;
-                    faceDownCards = true;                           // here
-                    burn = false;
-                    opensItSelf = false;
-                    break;
-                case LevelTypeName.MemoryDynamicSpeed:
-                    useTimer = false;
-                    useDynamicTimer = true;                         // here
-                    faceDownCards = true;                           // here
-                    burn = false;
-                    opensItSelf = false;
-                    break;
                 case LevelTypeName.BurnMemory:
-                    useTimer = false;
-                    useDynamicTimer = true;                         // here
-                    faceDownCards = true;                           // here
-                    burn = true;                                    // here
-                    opensItSelf = false;
-                    break;
                 case LevelTypeName.SelfOpenedMemory:
-                    useTimer = false;
-                    useDynamicTimer = true;                         // here
-                    faceDownCards = true;                           // here
-                    burn = true;                                    // here
-                    opensItSelf = true;                             // here
+                    useTimer = true;
                     break;
                 default:
-                    throw new ArgumentException("Unknown level type", nameof(typeName));
-            }
-
+                    useTimer = false;
+                    break;
+            }                                   // useTimer          
+            switch (typeName)
+            {
+                case LevelTypeName.DynamicSpeed:
+                case LevelTypeName.MemoryDynamicSpeed:
+                case LevelTypeName.BurnMemory:
+                case LevelTypeName.SelfOpenedMemory:
+                    useDynamicTimer = true;
+                    break;
+                default:
+                    useDynamicTimer = false;
+                    break;
+            }                                   // useDynamicTimer           
+            switch (typeName)
+            {
+                case LevelTypeName.MemorySimple:
+                case LevelTypeName.MemorySpeed:
+                case LevelTypeName.MemoryDynamicSpeed:
+                case LevelTypeName.BurnMemory:
+                case LevelTypeName.SelfOpenedMemory:
+                    faceDownCards = true;
+                    break;
+                default:
+                    faceDownCards = false;
+                    break;
+            }                                   // faceDownCards
+            switch (typeName)
+            {
+                case LevelTypeName.BurnMemory:
+                case LevelTypeName.SelfOpenedMemory:
+                    burn = true;
+                    break;
+                default:
+                    burn = false;
+                    break;
+            }                                   // burn
+            switch (typeName)
+            {
+                case LevelTypeName.SelfOpenedMemory:
+                    opensItSelf = true;
+                    break;
+                default:
+                    opensItSelf = false;
+                    break;
+            }                                   // opensItSelf
         }
     }
 

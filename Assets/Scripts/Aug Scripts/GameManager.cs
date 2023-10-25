@@ -16,10 +16,20 @@ using System.Linq;
 /// </summary>
 public /*sealed */class GameManager : MonoBehaviour
 {
-    #region thread safe Singleton
+    #region thread safe Singleton and readonly
     private static readonly object lockObject = new object();
     private static GameManager instance = null;
-    private GameManager() { }
+    
+    #region readonly
+    private readonly LevelThemeName[] levelThemes;
+    private readonly LevelTypeName[] levelTypes;
+    #endregion
+
+    private GameManager() 
+    {
+        levelThemes = (LevelThemeName[])Enum.GetValues(typeof(LevelThemeName));
+        levelTypes = (LevelTypeName[])Enum.GetValues(typeof(LevelTypeName));
+    }
     public static GameManager Instance
     {
         get
@@ -44,10 +54,7 @@ public /*sealed */class GameManager : MonoBehaviour
     //TASK // Or Set as readonly I want to protect levels!
     // Values
     private static List<Level> _levels;                         // All levels list using Screen Resolution
-    public static Dictionary<LevelThemeName, Dictionary<LevelTypeName, List<Level>>> levelsDict { get; private set; }
-      
-    //private static int _maxLevel;
-    //private static int[] _currentLevel;
+    public static Dictionary<LevelThemeName, Dictionary<LevelTypeName, List<Level>>> levelsDict { get; private set; }  
 
     private void Awake()
     {
@@ -75,7 +82,6 @@ public /*sealed */class GameManager : MonoBehaviour
             Debug.LogError("GameManager couldn't subscribe on levelConstructorManager");
         }
     }
-
     private void Start()
     {
         CreateMainMenu();
@@ -92,11 +98,18 @@ public /*sealed */class GameManager : MonoBehaviour
         //int[] levelId = { 0,0,0};
         // TASK // Should know, what level you should create
         //LevelFactory.CreateLevel(levelId);
+
+
+        // TESTS
+        OpenFirstTypeInTheme(LevelThemeName.EnglishAlphabet);
+
     }
     private void LoadGameData()
     {
         _levels = LevelFactory.SetUpLevels();
         levelsDict = LevelFactory.ConverLevelListToDictionary(_levels);
+
+        
 
         // PrepareLevelsList();
         // LoadPlayerData();
@@ -186,6 +199,46 @@ public /*sealed */class GameManager : MonoBehaviour
         my_MenuManager.UpdateThemeButtonsAvailability(levelsDict);
     }
 
+    public void OpenFirstTypeInTheme(LevelThemeName themeName)
+    {
+        if (!levelsDict.TryGetValue(themeName, out var levelTypes))
+        {
+            Debug.LogError($"There's no such theme name '{themeName}'");
+            return;
+        }       
+
+        if (levelTypes.TryGetValue(this.levelTypes[0], out var firstTypeLevels))
+        {
+            bool isOpenedLevelExists = false;
+
+            foreach (var level in firstTypeLevels)
+            {
+                if (level.LevelDictionary != null && !string.IsNullOrEmpty(level.LevelDictionary.GetData()))
+                {
+                    level.OpenLevel();
+                    isOpenedLevelExists = true;
+                }
+                else
+                {
+                    Debug.LogError("Unable to open level: missing or empty LevelDictionary.");
+                    break;
+                }
+            }
+
+            if (isOpenedLevelExists)
+            {
+                my_MenuManager.UpdateThemeButtonsAvailability(levelsDict);
+            }
+            else
+            {
+                Debug.Log("No levels available for opening in the first type of this theme.");
+            }
+        }
+        else
+        {
+            Debug.Log($"No levels of the first type available for theme '{themeName}'.");
+        }
+    }
 
     // TASK // Realize
     private void OpenType(LevelTypeName typeName)
@@ -197,40 +250,76 @@ public /*sealed */class GameManager : MonoBehaviour
 
     private void OnLevelCompleted(Level completedLevel)
     {
-        // TASK // Add lose condition later
-        bool isLastLevelInType = completedLevel.Number == _levels.Last().Number;    // сомнения, что это то, что надо
-        if (isLastLevelInType)
+        Level nextLevel = GetNextLevelNumber(completedLevel);
+
+        // TASK // Add lose condition late
+        if (nextLevel == null)
         {
-            // know next level here
-            OpenLevelType(completedLevel); // set next level
-            DestroyLevel();                                                         // go to type menu, save, etc
-            // Open Next Level
+            DestroyLevel();
+            OpenNextLevelType(completedLevel); //TASK // set next level type
+            
+            my_MenuManager.GoBack();
+            my_MenuManager.UpdateTypeButtons(completedLevel.ThemeName);
+            // go to type menu, save, etc
+            // TASK // Open Next Level type
+            // TASK // Return to Type menu
+            // TASK // Add win/lose condition later
+            // TASK // Add adv here later
         }
         else
         {
             // know next level here
             DestroyLevel();
-            StartLevel(completedLevel);
+            CreateLevel(nextLevel);
+        }
+    }
+    private Level GetNextLevelNumber(Level currentLevel)
+    {
+        int currentTheme = currentLevel.LevelId[0];
+        int currentType = currentLevel.LevelId[1];
+
+        Level nextLevel = _levels
+            .FirstOrDefault(level =>
+            level.LevelId[0] == currentTheme &&
+            level.LevelId[1] == currentType &&
+            level.LevelId[2] == currentLevel.LevelId[2] + 1);
+
+        return nextLevel;
+    }
+    private void OpenNextLevelType(Level currentLevel)
+    {
+        LevelTypeName currentType = currentLevel.LevelType.Name;
+        int currentIndex = Array.IndexOf(levelTypes, currentType);
+
+        // If that was last level in levelTypes
+        if (currentIndex < 0 || currentIndex + 1 >= levelTypes.Length) { return; }
+
+        LevelTypeName nextType = levelTypes[currentIndex + 1];
+
+        // Если словарь levelsDict содержит текущий тип, открываем все уровни этого типа
+        if (levelsDict.TryGetValue(currentLevel.ThemeName, out var themeLevels) && themeLevels.ContainsKey(nextType))
+        {
+            var levelsToOpen = themeLevels[nextType];
+            foreach (var level in levelsToOpen)
+            {
+                level.OpenLevel();
+            }
         }
     }
 
-    private void OpenLevelType(Level currentLevel)
-    {
-        //Set Open to Next level
-    }
-    private void StartLevel(Level currentLevel)
-    {
-        Level nextLevel = GetNextLevel(currentLevel);
-        CreateLevel(nextLevel);
-    }
-    private Level GetNextLevel(Level currentLevel)
-    {
-        currentLevel.LevelId[currentLevel.LevelId.Length - 1]++;
-        Level nextLevel = _levels
-            .FirstOrDefault(level => Enumerable
-            .SequenceEqual(level.LevelId, currentLevel.LevelId));
-        return nextLevel;
-    }
+    //private void StartLevel(Level currentLevel)
+    //{
+    //    Level nextLevel = GetNextLevel(currentLevel);
+    //    CreateLevel(nextLevel);
+    //}
+    //private Level GetNextLevel(Level currentLevel)
+    //{
+    //    currentLevel.LevelId[currentLevel.LevelId.Length - 1]++;
+    //    Level nextLevel = _levels
+    //        .FirstOrDefault(level => Enumerable
+    //        .SequenceEqual(level.LevelId, currentLevel.LevelId));
+    //    return nextLevel;
+    //}
 
     public Level CreateLevel(int[] levelId)
     {

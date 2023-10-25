@@ -11,7 +11,8 @@ namespace Tools
     {
         private static readonly int uiOffsetHeight = 400;          // UI height px
         private static readonly int uiOffsetWidth = 150;           // UI width px
-        private static readonly int cardPxSize = 100;              // UI width px
+        // TASK // Set 150-250 here // Maybe for different types different size
+        private static readonly int minCardPxSize = 400;            // good size is 150-200
         private static readonly int initialRowCount = 2;
         private static readonly int initialColCount = 2;
 
@@ -42,8 +43,8 @@ namespace Tools
             // Get max level cards per Row and Col
             int screenWidth = Screen.width - uiOffsetWidth;
             int screenHeight = Screen.height - uiOffsetHeight;
-            int maxCardsPerRow = screenWidth / cardPxSize;
-            int maxCardsPerColumn = screenHeight / cardPxSize;
+            int maxCardsPerRow = screenWidth / minCardPxSize;
+            int maxCardsPerColumn = screenHeight / minCardPxSize;
 
             // 1st(0) level values
             int currentRowCount = initialRowCount;

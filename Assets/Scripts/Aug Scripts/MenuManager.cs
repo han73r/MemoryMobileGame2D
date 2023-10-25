@@ -66,10 +66,18 @@ public class MenuManager : MonoBehaviour
         }
         return null;
     }
-    private void CreateSubmenu(LevelThemeName selectedTheme)
-    {
-        currentMenuLevel = MenuLevel.Type;
 
+    private void CreateTypeButtons(LevelThemeName selectedTheme, bool updateButtons = false)
+    {
+        if (updateButtons)
+        {
+            foreach (Transform child in _themeButtonContainer)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        currentMenuLevel = MenuLevel.Type;
         var levelTypesForTheme = GameManager.levelsDict[selectedTheme]; // Get Level Types
 
         foreach (var levelType in levelTypesForTheme.Keys)
@@ -101,15 +109,20 @@ public class MenuManager : MonoBehaviour
             }
         }
     }
+    public void UpdateTypeButtons(LevelThemeName selectedTheme)
+    {
+        CreateTypeButtons(selectedTheme, true);
+    }
+
     private void OnThemeButtonClicked(LevelThemeName selectedTheme)
     {
         Debug.Log("Selected Theme: " + selectedTheme.ToString());
         Tool.RemoveChildObjects(_themeButtonContainer);
-        CreateSubmenu(selectedTheme);
+        CreateTypeButtons(selectedTheme);
     }
     private void OnLevelTypeButtonClicked(Level level)
     {
-        Debug.Log("Selected Type: " + level.TypeName);
+        Debug.Log("Selected Type: " + level.LevelType.Name);
         GameManager.Instance.CreateLevel(level);
     }
     public void GoBack()
