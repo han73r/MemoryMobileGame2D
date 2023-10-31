@@ -1,36 +1,96 @@
+﻿using System.Collections.Generic;
 /// <summary>
 /// Add Different all methods here 
 /// and create Interfaces here for different Dictionaries
 /// </summary>
-public abstract class LevelDictionary
+public abstract class LevelDictionary: ILevelDictionary
 {
-    public abstract string GetData();
-}
-public class StringLevelDictionary : LevelDictionary
-{
-    private string data;
-
-    public StringLevelDictionary(string data)
+    protected string dictionary;            // TAST // Add behavior dict not string
+    public LevelDictionary(string initialData)
     {
-        this.data = data;
+        dictionary = initialData;
+    }
+    public string GetData() 
+    { 
+        return dictionary;
+    }
+    public virtual void SetData(string newData)
+    {
+        dictionary = newData;
     }
 
-    public override string GetData()
+}
+public class SimpleFigures : LevelDictionary
+{
+    public SimpleFigures() : base("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     {
-        return data;
     }
 }
+public class TagGame : LevelDictionary
+{
+    public TagGame() : base("ABCDEFGHIJKLMNOPQRSTUVWXYZ")   // what?
+    {
+    }
+}
+public class Symbols : LevelDictionary
+{
+    public Symbols() : base("♥$%&@#!*🌟⚽⚡🌺🍀🌈🎈")   // add
+    {
+    }
+}
+public class ArithmeticOperations : LevelDictionary
+{
+    public ArithmeticOperations() : base("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    {
+    }
+}
+public class RomanNumerals : LevelDictionary
+{
+    public RomanNumerals() : base("")
+    {
+        string romanNumeralsDictionary = "I,II,III,IV,V,VI,VII,VIII,IX,X";
+        SetData(romanNumeralsDictionary);
+    }
+    
+    public override void SetData(string newData)
+    {
+        dictionary = newData;
+    }
+}
+
 public class EnglishAlphabet : LevelDictionary
 {
-    public override string GetData()
+    public EnglishAlphabet() : base("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     {
-        return "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     }
 }
 public class Numerals : LevelDictionary
 {
-    public override string GetData()
+    public Numerals() : base("0987654321")
     {
-        return "0987654321";
     }
 }
+
+//public class StringLevelDictionary : LevelDictionary
+//{
+//    private string data;
+
+//    public StringLevelDictionary(string data)
+//    {
+//        this.data = data;
+//    }
+
+//    public override string GetData()
+//    {
+//        return data;
+//    }
+//}
+
+//public override string GetData()
+//{
+//    return "0987654321";
+//}
+//public override string GetData()
+//{
+//    return "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+//}

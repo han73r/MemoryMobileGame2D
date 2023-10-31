@@ -23,17 +23,11 @@ namespace Data
         public void OpenLevel()
         {
             DynamicData.OpenLevel();
-            //if (CanOpenLevel()) DynamicData.OpenLevel();
-            //else Debug.LogError("Unable to open level: missing or empty LevelDictionary."); // double check?
         }
         public void CloseLevel()
         {
             DynamicData.CloseLevel();
         }
-        //private bool CanOpenLevel()
-        //{
-        //    return LevelDictionary != null && !string.IsNullOrEmpty(LevelDictionary.GetData());
-        //}
         // QUESTION // Can we Leave only one constructor 
         // Level Constructor to create level List
         public Level(int[] levelId, LevelNumber levelNumber)
@@ -55,79 +49,59 @@ namespace Data
             Type = levelId[1];
             Number = levelId[2];
             ThemeName = ((LevelThemeName)Theme);
-
-            //if (Theme <= (Enum.GetValues(typeof(LevelThemeName)).Length))
-            //{
-            //    ThemeName = ((LevelThemeName)Theme);
-            //}
-            //// TASK // But here we can change something
-            //else
-            //{
-            //    throw new ArgumentException("Invalid Theme value for ThemeName.");
-            //}
-
-            //if (Type <= (Enum.GetValues(typeof(LevelTypeName)).Length))
-            //{
-            //    TypeName = ((LevelTypeName)Type).ToString();
-            //}
-            //// TASK // But here we can change something
-            //else
-            //{
-            //    throw new ArgumentException("Invalid Theme value for ThemeName.");
-            //}
-
             LevelType = new LevelType((LevelTypeName)Type);
             LevelNumber = levelNumber;
+            LevelDictionary = ThemeManager.Instance.GetDictionaryForTheme((LevelThemeName)Theme);
 
-            switch ((LevelThemeName)Theme)
-            {
-                case LevelThemeName.SimpleFigures:
-                    break;
-                case LevelThemeName.Numerals:
-                    LevelDictionary = new Numerals();
-                    break;
-                case LevelThemeName.TagGame:
-                    break;
-                case LevelThemeName.Symbols:
-                    break;
-                case LevelThemeName.ArithmeticOperations:
-                    break;
-                case LevelThemeName.RomanNumerals:
-                    break;
-                case LevelThemeName.EnglishAlphabet:
-                    LevelDictionary = new EnglishAlphabet();
-                    break;
-                case LevelThemeName.ChineseCharacters:
-                    break;
-                case LevelThemeName.WordParts:
-                    break;
-                case LevelThemeName.Pharse:
-                    break;
-                case LevelThemeName.SameMeaning:
-                    break;
-                case LevelThemeName.Emoji:
-                    break;
-                case LevelThemeName.EmojiParts:
-                    break;
-                case LevelThemeName.WordsAndPics:
-                    break;
-                case LevelThemeName.Colors:
-                    break;
-                case LevelThemeName.ColorShades:
-                    break;
-                case LevelThemeName.FastLowPolyPics:
-                    break;
-                case LevelThemeName.Puzzles:
-                    break;
-                case LevelThemeName.Pictures:
-                    break;
-                case LevelThemeName.BonusCraft:
-                    break;
-                case LevelThemeName.BonusStylus:
-                    break;
-                default:
-                    throw new ArgumentException("Invalid Level Theme");
-            }
+            //switch ((LevelThemeName)Theme)
+            //{
+            //    case LevelThemeName.SimpleFigures:
+            //        break;
+            //    case LevelThemeName.Numerals:
+            //        LevelDictionary = new Numerals();
+            //        break;
+            //    case LevelThemeName.TagGame:
+            //        break;
+            //    case LevelThemeName.Symbols:
+            //        break;
+            //    case LevelThemeName.ArithmeticOperations:
+            //        break;
+            //    case LevelThemeName.RomanNumerals:
+            //        break;
+            //    case LevelThemeName.EnglishAlphabet:
+            //        LevelDictionary = new EnglishAlphabet();
+            //        break;
+            //    case LevelThemeName.ChineseCharacters:
+            //        break;
+            //    case LevelThemeName.WordParts:
+            //        break;
+            //    case LevelThemeName.Pharse:
+            //        break;
+            //    case LevelThemeName.SameMeaning:
+            //        break;
+            //    case LevelThemeName.Emoji:
+            //        break;
+            //    case LevelThemeName.EmojiParts:
+            //        break;
+            //    case LevelThemeName.WordsAndPics:
+            //        break;
+            //    case LevelThemeName.Colors:
+            //        break;
+            //    case LevelThemeName.ColorShades:
+            //        break;
+            //    case LevelThemeName.FastLowPolyPics:
+            //        break;
+            //    case LevelThemeName.Puzzles:
+            //        break;
+            //    case LevelThemeName.Pictures:
+            //        break;
+            //    case LevelThemeName.BonusCraft:
+            //        break;
+            //    case LevelThemeName.BonusStylus:
+            //        break;
+            //    default:
+            //        throw new ArgumentException("Invalid Level Theme");
+            //}
 
             DynamicData = new DynamicData(levelId);
         }
@@ -139,25 +113,6 @@ namespace Data
             Type = levelId[1];                                          // but you can delete it if you want
             Number = levelId[2];
             ThemeName = ((LevelThemeName)Theme);
-
-            // TASK // What if value is bigger?
-            //if (Theme <= (Enum.GetValues(typeof(LevelThemeName)).Length))
-            //{
-            //    ThemeName = ((LevelThemeName)Theme);
-            //}
-            //else
-            //{
-            //    throw new ArgumentException("Invalid Theme value for ThemeName.");
-            //}
-            //if (Type <= (Enum.GetValues(typeof(LevelTypeName)).Length))
-            //{
-            //    TypeName = ((LevelTypeName)Type).ToString();
-            //}
-            //else
-            //{
-            //    throw new ArgumentException("Invalid Theme value for ThemeName.");
-            //}
-
             LevelType = new LevelType((LevelTypeName)Type);
             LevelNumber = new LevelNumber(levelId[2]);
 
