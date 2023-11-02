@@ -34,7 +34,7 @@ public class TagGame : LevelDictionary
 }
 public class Symbols : LevelDictionary
 {
-    public Symbols() : base("♥$%&@#!*🌟⚽⚡🌺🍀🌈🎈")   // add
+    public Symbols() : base("♥$¥€£%&@#!?§®©*")   // add 🌟⚽⚡🌺🍀🌈🎈 - not working
     {
     }
 }

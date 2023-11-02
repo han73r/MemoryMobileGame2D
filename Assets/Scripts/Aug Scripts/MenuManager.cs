@@ -82,22 +82,21 @@ public class MenuManager : MonoBehaviour
 
         foreach (var levelType in levelTypesForTheme.Keys)
         {
-            // At least one level should be IsOpened = true to active the Type button
-            //bool isOpenedLevelExists = levelTypesForTheme[levelType].Any(level => level.DynamicData.IsOpened);
+            GameObject buttonGO = Instantiate(_typeButtonPrefab, _themeButtonContainer);
+            Button button = buttonGO.GetComponent<Button>();
+            TextMeshProUGUI buttonText = buttonGO.GetComponentInChildren<TextMeshProUGUI>();
+
+            buttonText.text = levelType.ToString();
+
+            // At least one level should be IsOpened = true to make the Type button interactable
             var openedLevel = levelTypesForTheme[levelType].FirstOrDefault(level => level.DynamicData.IsOpened);
+
+            button.interactable = (openedLevel != null);
+
+            // Capture the openedLevel in a closure and pass it to OnLevelTypeButtonClicked
             if (openedLevel != null)
             {
-                GameObject buttonGO = Instantiate(_typeButtonPrefab, _themeButtonContainer);
-                Button button = buttonGO.GetComponent<Button>();
-                TextMeshProUGUI buttonText = buttonGO.GetComponentInChildren<TextMeshProUGUI>();
-
-                buttonText.text = levelType.ToString();
-
-                button.interactable = true; // The button is interactable because we found an opened level
-
-                // Capture the openedLevel in a closure and pass it to OnLevelTypeButtonClicked
                 Level level = openedLevel;
-
                 button.onClick.AddListener(() =>
                 {
                     OnLevelTypeButtonClicked(level);

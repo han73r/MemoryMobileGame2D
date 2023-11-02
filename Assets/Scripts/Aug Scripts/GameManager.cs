@@ -20,11 +20,6 @@ public /*sealed */class GameManager : MonoBehaviour
     private static readonly object lockObject = new object();
     private static GameManager instance = null;
     
-    #region readonly
-    private readonly LevelThemeName[] levelThemes;
-    private readonly LevelTypeName[] levelTypes;
-    #endregion
-
     private GameManager() 
     {
         levelThemes = (LevelThemeName[])Enum.GetValues(typeof(LevelThemeName));
@@ -46,7 +41,12 @@ public /*sealed */class GameManager : MonoBehaviour
         }
     }
     #endregion
-    
+
+    #region readonly
+    private readonly LevelThemeName[] levelThemes;
+    private readonly LevelTypeName[] levelTypes;
+    #endregion
+
     [SerializeField] private MenuManager my_MenuManager;
     [SerializeField] private LevelConstructorManager my_LevelConstructorManager;
 
@@ -101,16 +101,19 @@ public /*sealed */class GameManager : MonoBehaviour
 
 
         // TESTS
-        OpenFirstTypeInTheme(LevelThemeName.EnglishAlphabet);
+        OpenFirstTypeInTheme(LevelThemeName.SimpleFigures);
+        //OpenFirstTypeInTheme(LevelThemeName.Numerals);
+        //OpenFirstTypeInTheme(LevelThemeName.TagGame);
+        //OpenFirstTypeInTheme(LevelThemeName.Symbols);
+        //OpenFirstTypeInTheme(LevelThemeName.EnglishAlphabet);
+        //OpenFirstTypeInTheme(LevelThemeName.ArithmeticOperations);       
+        //OpenFirstTypeInTheme(LevelThemeName.RomanNumerals);
 
     }
     private void LoadGameData()
     {
         _levels = LevelFactory.SetUpLevels();
         levelsDict = LevelFactory.ConverLevelListToDictionary(_levels);
-
-        
-
         // PrepareLevelsList();
         // LoadPlayerData();
         // LoadOptionsData();                                       // Sound, Music and etc.
@@ -250,29 +253,131 @@ public /*sealed */class GameManager : MonoBehaviour
 
     private void OnLevelCompleted(Level completedLevel)
     {
-        Level nextLevel = GetNextLevelNumber(completedLevel);
-
-        // TASK // Add lose condition late
-        if (nextLevel == null)
+        // TASK // Check if lastLevelInType or in Theme
+        if (IsLastLevelInType(completedLevel))
         {
-            DestroyLevel();
-            OpenNextLevelType(completedLevel); //TASK // set next level type
-            
-            my_MenuManager.GoBack();
-            my_MenuManager.UpdateTypeButtons(completedLevel.ThemeName);
-            // go to type menu, save, etc
-            // TASK // Open Next Level type
-            // TASK // Return to Type menu
-            // TASK // Add win/lose condition later
-            // TASK // Add adv here later
+            if (IsLastLevelInTheme(completedLevel))
+            {
+                DestroyLevel();
+                OpenNextTheme(completedLevel);
+                my_MenuManager.GoBack();
+                my_MenuManager.GoBack();
+                my_MenuManager.UpdateThemeButtonsAvailability(levelsDict);
+            }
+            else
+            {
+                DestroyLevel();
+                OpenNextType(completedLevel);
+                my_MenuManager.GoBack();
+                my_MenuManager.UpdateTypeButtons(completedLevel.ThemeName);
+            }
         }
         else
         {
-            // know next level here
+            Level nextLevel = GetNextLevelNumber(completedLevel);
             DestroyLevel();
             CreateLevel(nextLevel);
         }
     }
+        //Level nextLevel = GetNextLevelNumber(completedLevel);
+        // TASK // Add lose condition late
+        //if (nextLevel == null)
+        //{
+        //    //TASK // Check if it was last level in this TYPE? IF YES - go to THEME MENU
+        //    if (true)
+        //    {
+
+        //    }
+
+        //    DestroyLevel();
+        //    OpenNextLevelType(completedLevel); //TASK // set next level type
+            
+        //    my_MenuManager.GoBack();
+        //    my_MenuManager.UpdateTypeButtons(completedLevel.ThemeName);
+            
+        //    // go to type menu, save, etc
+        //    // TASK // Add win/lose condition later
+        //    // TASK // Add adv here later
+        //}
+        //else
+        //{
+        //    // know next level here
+        //    DestroyLevel();
+        //    CreateLevel(nextLevel);
+        //}
+    //}
+    private bool IsLastLevelInType(Level level)                     // not best check
+    {
+        int currentTheme = level.LevelId[0];
+        int currentType = level.LevelId[1];
+
+        Level nextLevelInType = _levels
+            .FirstOrDefault(nextlevel =>
+            nextlevel.LevelId[0] == currentTheme &&
+            nextlevel.LevelId[1] == currentType &&
+            nextlevel.LevelId[2] == level.LevelId[2] + 1);
+
+        return (nextLevelInType == null);
+    }
+    private bool IsLastLevelInTheme(Level level)                    // not best check
+    {
+        int currentTheme = level.LevelId[0];
+        int currentLevel = level.LevelId[2];
+
+        Level nextLevelInTheme = _levels
+        .FirstOrDefault(nextlevel =>
+            nextlevel.LevelId[0] == currentTheme &&
+            nextlevel.LevelId[1] == level.LevelId[1] + 1 &&
+            nextlevel.LevelId[2] == currentLevel);
+
+        return (nextLevelInTheme == null);
+    }
+    private void OpenNextType(Level previosLevel)
+    {
+        LevelTypeName currentType = previosLevel.LevelType.Name;
+        int currentTypeIndex = Array.IndexOf(levelTypes, currentType);
+
+        // TASK // Add check if it last type ever
+        LevelTypeName nextType = levelTypes[currentTypeIndex + 1];
+        Debug.Log($"<color=green>Opening next Type: {nextType}</color>");
+
+        if (levelsDict.TryGetValue(previosLevel.ThemeName, out var themeLevels) && themeLevels.ContainsKey(nextType))
+        {
+            var levelsToOpen = themeLevels[nextType];
+            foreach (var level in levelsToOpen)
+            {
+                level.OpenLevel();
+            }
+        }
+    }
+    // IMPORTANT // IF IT IS LAST THEME IN GAME??
+    private void OpenNextTheme(Level previosLevel)
+    {
+        LevelThemeName currentTheme = previosLevel.ThemeName;
+        int currentThemeIndex = Array.IndexOf(levelThemes, previosLevel.LevelType.Name);
+
+        // TASK // Add check if it last theme ever
+        LevelThemeName nextTheme = levelThemes[currentThemeIndex + 1];
+        Debug.Log($"<color=green>Opening next Theme: {nextTheme}</color>");
+
+        //if (currentThemeIndex >= 0 && currentThemeIndex + 1 < themeNames.Length)
+        //{
+        //    LevelThemeName nextTheme = themeNames[currentThemeIndex + 1];
+
+        if (levelsDict.TryGetValue(nextTheme, out var themeLevels) && themeLevels.ContainsKey(levelTypes[0]))
+        {
+            var levelsToOpen = themeLevels[levelTypes[0]];
+            foreach (var level in levelsToOpen)
+            {
+                level.OpenLevel();
+            }
+        }      
+    }
+
+
+    /// <summary>
+    ///  Retrun ONLY levels in choosed type
+    /// </summary>
     private Level GetNextLevelNumber(Level currentLevel)
     {
         int currentTheme = currentLevel.LevelId[0];
@@ -306,35 +411,38 @@ public /*sealed */class GameManager : MonoBehaviour
             }
         }
     }
+    //private void CheckLastLevelInTheme(Level currentLevel)
+    //{
 
-    public Level CreateLevel(int[] levelId)
-    {
-        return new Level(levelId);
+    //}
+    //public Level CreateLevel(int[] levelId)
+    //{
+    //    return new Level(levelId);
 
-        //if (levelId.Length != 3)
-        //{
-        //    throw new ArgumentException("LevelId should contain exactly 3 integers.");
-        //}
+    //    //if (levelId.Length != 3)
+    //    //{
+    //    //    throw new ArgumentException("LevelId should contain exactly 3 integers.");
+    //    //}
 
-        //int theme = levelId[0];
-        //int type = levelId[1];
-        //int number = levelId[2];
+    //    //int theme = levelId[0];
+    //    //int type = levelId[1];
+    //    //int number = levelId[2];
 
-        //// TASK // CHECK // Don't see Number check.. If it will be a value bigger than in Dictionary? Check
-        //if (_levelsDict.Values.Any(themeDict => themeDict.ContainsKey((LevelTypeName)type)) &&
-        //    _levelsDict.TryGetValue((LevelThemeName)theme, out var themeDict) &&
-        //    themeDict.ContainsKey((LevelTypeName)type))
-        //{
-        //    return new Level(levelId);
-        //}
+    //    //// TASK // CHECK // Don't see Number check.. If it will be a value bigger than in Dictionary? Check
+    //    //if (_levelsDict.Values.Any(themeDict => themeDict.ContainsKey((LevelTypeName)type)) &&
+    //    //    _levelsDict.TryGetValue((LevelThemeName)theme, out var themeDict) &&
+    //    //    themeDict.ContainsKey((LevelTypeName)type))
+    //    //{
+    //    //    return new Level(levelId);
+    //    //}
 
-        //throw new ArgumentException("Invalid levelId.");
-    }
+    //    //throw new ArgumentException("Invalid levelId.");
+    //}
 
     // QUESTION // Is it a good solution to use GameManager as one object to talk to others?
-    public void CreateLevel(int[] levelId, 
-        Dictionary<LevelThemeName, Dictionary<LevelTypeName, LevelNumber>> levelsDict)
-    {
-        LevelFactory.CreateLevel(levelId, levelsDict);
-    }
+    //public void CreateLevel(int[] levelId, 
+    //    Dictionary<LevelThemeName, Dictionary<LevelTypeName, LevelNumber>> levelsDict)
+    //{
+    //    LevelFactory.CreateLevel(levelId, levelsDict);
+    //}
 }
