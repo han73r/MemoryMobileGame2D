@@ -307,20 +307,6 @@ public /*sealed */class GameManager : MonoBehaviour
         }
     }
 
-    //private void StartLevel(Level currentLevel)
-    //{
-    //    Level nextLevel = GetNextLevel(currentLevel);
-    //    CreateLevel(nextLevel);
-    //}
-    //private Level GetNextLevel(Level currentLevel)
-    //{
-    //    currentLevel.LevelId[currentLevel.LevelId.Length - 1]++;
-    //    Level nextLevel = _levels
-    //        .FirstOrDefault(level => Enumerable
-    //        .SequenceEqual(level.LevelId, currentLevel.LevelId));
-    //    return nextLevel;
-    //}
-
     public Level CreateLevel(int[] levelId)
     {
         return new Level(levelId);
