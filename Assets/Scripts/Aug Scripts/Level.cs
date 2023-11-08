@@ -52,57 +52,6 @@ namespace Data
             LevelType = new LevelType((LevelTypeName)Type);
             LevelNumber = levelNumber;
             LevelDictionary = ThemeManager.Instance.GetDictionaryForTheme((LevelThemeName)Theme);
-
-            //switch ((LevelThemeName)Theme)
-            //{
-            //    case LevelThemeName.SimpleFigures:
-            //        break;
-            //    case LevelThemeName.Numerals:
-            //        LevelDictionary = new Numerals();
-            //        break;
-            //    case LevelThemeName.TagGame:
-            //        break;
-            //    case LevelThemeName.Symbols:
-            //        break;
-            //    case LevelThemeName.ArithmeticOperations:
-            //        break;
-            //    case LevelThemeName.RomanNumerals:
-            //        break;
-            //    case LevelThemeName.EnglishAlphabet:
-            //        LevelDictionary = new EnglishAlphabet();
-            //        break;
-            //    case LevelThemeName.ChineseCharacters:
-            //        break;
-            //    case LevelThemeName.WordParts:
-            //        break;
-            //    case LevelThemeName.Pharse:
-            //        break;
-            //    case LevelThemeName.SameMeaning:
-            //        break;
-            //    case LevelThemeName.Emoji:
-            //        break;
-            //    case LevelThemeName.EmojiParts:
-            //        break;
-            //    case LevelThemeName.WordsAndPics:
-            //        break;
-            //    case LevelThemeName.Colors:
-            //        break;
-            //    case LevelThemeName.ColorShades:
-            //        break;
-            //    case LevelThemeName.FastLowPolyPics:
-            //        break;
-            //    case LevelThemeName.Puzzles:
-            //        break;
-            //    case LevelThemeName.Pictures:
-            //        break;
-            //    case LevelThemeName.BonusCraft:
-            //        break;
-            //    case LevelThemeName.BonusStylus:
-            //        break;
-            //    default:
-            //        throw new ArgumentException("Invalid Level Theme");
-            //}
-
             DynamicData = new DynamicData(levelId);
         }
         // Level Constructor 2 (for reach max level)

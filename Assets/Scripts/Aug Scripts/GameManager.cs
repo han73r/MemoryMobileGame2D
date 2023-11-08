@@ -102,6 +102,7 @@ public /*sealed */class GameManager : MonoBehaviour
 
         // TESTS
         OpenFirstTypeInTheme(LevelThemeName.SimpleFigures);
+        //OpenType(LevelThemeName.SimpleFigures, LevelTypeName.SelfOpenedMemory);
         //OpenFirstTypeInTheme(LevelThemeName.Numerals);
         //OpenFirstTypeInTheme(LevelThemeName.TagGame);
         //OpenFirstTypeInTheme(LevelThemeName.Symbols);
@@ -243,11 +244,20 @@ public /*sealed */class GameManager : MonoBehaviour
         }
     }
 
-    // TASK // Realize
-    private void OpenType(LevelTypeName typeName)
+    // TASK // Realize // ONLY FOR TESTS // There is no reason to open not NEXT type for player
+    public void OpenType(LevelThemeName themeName, LevelTypeName typeName)
     {
         //TASK // Open Level Type in current theme
         //TASK // add status, to know which theme is opened
+        if (levelsDict.TryGetValue(themeName, out var themeLevels) && themeLevels.ContainsKey(typeName))
+        {
+            var levelsToOpen = themeLevels[typeName];
+            foreach (var level in levelsToOpen)
+            {
+                level.OpenLevel();
+            }
+        }
+        my_MenuManager.UpdateTypeButtons(themeName);
     }
     private void CloseType(LevelTypeName typeName) { }
 
@@ -332,6 +342,7 @@ public /*sealed */class GameManager : MonoBehaviour
 
         return (nextLevelInTheme == null);
     }
+    
     private void OpenNextType(Level previosLevel)
     {
         LevelTypeName currentType = previosLevel.LevelType.Name;
@@ -354,7 +365,7 @@ public /*sealed */class GameManager : MonoBehaviour
     private void OpenNextTheme(Level previosLevel)
     {
         LevelThemeName currentTheme = previosLevel.ThemeName;
-        int currentThemeIndex = Array.IndexOf(levelThemes, previosLevel.LevelType.Name);
+        int currentThemeIndex = Array.IndexOf(levelThemes, currentTheme);
 
         // TASK // Add check if it last theme ever
         LevelThemeName nextTheme = levelThemes[currentThemeIndex + 1];
@@ -411,38 +422,4 @@ public /*sealed */class GameManager : MonoBehaviour
             }
         }
     }
-    //private void CheckLastLevelInTheme(Level currentLevel)
-    //{
-
-    //}
-    //public Level CreateLevel(int[] levelId)
-    //{
-    //    return new Level(levelId);
-
-    //    //if (levelId.Length != 3)
-    //    //{
-    //    //    throw new ArgumentException("LevelId should contain exactly 3 integers.");
-    //    //}
-
-    //    //int theme = levelId[0];
-    //    //int type = levelId[1];
-    //    //int number = levelId[2];
-
-    //    //// TASK // CHECK // Don't see Number check.. If it will be a value bigger than in Dictionary? Check
-    //    //if (_levelsDict.Values.Any(themeDict => themeDict.ContainsKey((LevelTypeName)type)) &&
-    //    //    _levelsDict.TryGetValue((LevelThemeName)theme, out var themeDict) &&
-    //    //    themeDict.ContainsKey((LevelTypeName)type))
-    //    //{
-    //    //    return new Level(levelId);
-    //    //}
-
-    //    //throw new ArgumentException("Invalid levelId.");
-    //}
-
-    // QUESTION // Is it a good solution to use GameManager as one object to talk to others?
-    //public void CreateLevel(int[] levelId, 
-    //    Dictionary<LevelThemeName, Dictionary<LevelTypeName, LevelNumber>> levelsDict)
-    //{
-    //    LevelFactory.CreateLevel(levelId, levelsDict);
-    //}
 }

@@ -43,10 +43,16 @@ public class DebugTool : MonoBehaviour
                         DisplayHelp();
                         break;
                     case "open":                        
-                        if (inputParts.Length >= 2)
+                        if (inputParts.Length == 2)
                         {
                             string themeName = inputParts[1].ToLower();
                             OpenTheme(themeName);
+                        }
+                        if (inputParts.Length == 3)
+                        {
+                            string themeName = inputParts[1].ToLower();
+                            string typeName = inputParts[2].ToLower();
+                            OpenType(themeName, typeName);
                         }
                         else
                         {
@@ -101,6 +107,25 @@ public class DebugTool : MonoBehaviour
         {
             Debug.Log($"Opening theme: {theme}");
             GameManager.Instance.OpenTheme(theme);         
+        }
+        else
+        {
+            Debug.LogWarning($"Theme '{themeName}' not found.");
+        }
+    }
+    private void OpenType(string themeName, string typeName)
+    {
+        if (Enum.TryParse(themeName, true, out LevelThemeName theme))
+        {
+            if (Enum.TryParse(typeName, true, out LevelTypeName type))
+            {
+                Debug.Log($"Opening theme: {theme} with type: {typeName}");
+                GameManager.Instance.OpenType(theme, type);
+            }
+            else
+            {
+                Debug.LogWarning($"Type '{typeName}' not found.");
+            }            
         }
         else
         {

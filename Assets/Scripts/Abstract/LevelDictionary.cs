@@ -70,27 +70,3 @@ public class Numerals : LevelDictionary
     {
     }
 }
-
-//public class StringLevelDictionary : LevelDictionary
-//{
-//    private string data;
-
-//    public StringLevelDictionary(string data)
-//    {
-//        this.data = data;
-//    }
-
-//    public override string GetData()
-//    {
-//        return data;
-//    }
-//}
-
-//public override string GetData()
-//{
-//    return "0987654321";
-//}
-//public override string GetData()
-//{
-//    return "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-//}
