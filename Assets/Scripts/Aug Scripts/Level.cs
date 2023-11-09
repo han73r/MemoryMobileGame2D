@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 namespace Data
 {
@@ -137,8 +138,8 @@ namespace Data
             {
                 case LevelTypeName.Speed:
                 case LevelTypeName.MemorySpeed:
-                case LevelTypeName.BurnMemory:
-                case LevelTypeName.SelfOpenedMemory:
+                //case LevelTypeName.BurnMemory:
+                //case LevelTypeName.SelfOpenedMemory:
                     useTimer = true;
                     break;
                 default:
@@ -270,17 +271,45 @@ namespace Data
         }
         public bool IsOpened { get; private set; } = false;
         public int[] PlayerScore { get; internal set; }             // keeps point data about each played session
-        public int BestPlayerScore { get; private set; }            // values for dynamic difficulty
+        public int BestPlayerScore { get; }                         // values for dynamic difficulty
         public int MiddlePlayerScore { get; private set; }
         public int GoalForPlayerScore { get; internal set; }        // set dinamic difficulty from previous values
-        public float[] PlayerTime { get; private set; }             // keeps data how fast win condition for player
-        public float BestPlayerTime { get; private set; }           // only for win condition, where faster is better
-        public float MiddlePlayerTime { get; private set; }         // only win condition
-        public float GoalForPlayerTime { get; internal set; }       // set dinamic difficulty from previous values
+        public List<TimeSpan> PlayerTime { get; set; }              // keeps data how fast win condition for player
+        public TimeSpan BestPlayerTime                              // only for win condition, where faster is better
+        {
+            get
+            {
+                if (PlayerTime.Count == 0)
+                {
+                    return TimeSpan.Zero;
+                }
+                return PlayerTime.Min();
+            }
+        }                                                           
+        public TimeSpan AveragePlayerTime                           // only win condition
+        {
+            get
+            {
+                if (PlayerTime.Count == 0)
+                {
+                    return TimeSpan.Zero;
+                }
+
+                long totalTicks = 0;
+
+                foreach (var time in PlayerTime)
+                {
+                    totalTicks += time.Ticks;
+                }
+
+                long averageTicks = totalTicks / PlayerTime.Count;
+                return TimeSpan.FromTicks(averageTicks);
+            }
+        }                                                           
+        public TimeSpan GoalForPlayerTime { get; internal set; }    // set dinamic difficulty from previous values
 
         public DynamicData(int[] levelId)
-        {
-            
+        {           
             //IsOpened = (levelId[0] == 0 && levelId[1] == 0 && levelId[2] == 0);
         }
 
@@ -328,21 +357,21 @@ namespace Data
             }
         }
 
-        public static float ReturnGoalForPlayerTime(List<Level> levelList, Level level)
-        {
-            if (level.DynamicData.BestPlayerTime != default)        // try to take data from Current level
-            {
-                return level.DynamicData.BestPlayerTime;
-            }
-            else
-            {
-                var simpleLevel = levelList
-                    .Find(l => l.Theme == level.Theme
-                    && l.LevelNumber.Number == level.LevelNumber.Number
-                    && l.Type == default);
-                return simpleLevel.DynamicData.BestPlayerTime;      // will be default or value anyway
-            }
-        }
+        //public static float ReturnGoalForPlayerTime(List<Level> levelList, Level level)
+        //{
+        //    if (level.DynamicData.BestPlayerTime != default)        // try to take data from Current level
+        //    {
+        //        return level.DynamicData.BestPlayerTime;
+        //    }
+        //    else
+        //    {
+        //        var simpleLevel = levelList
+        //            .Find(l => l.Theme == level.Theme
+        //            && l.LevelNumber.Number == level.LevelNumber.Number
+        //            && l.Type == default);
+        //        return simpleLevel.DynamicData.BestPlayerTime;      // will be default or value anyway
+        //    }
+        //}
     }
 
     // TASK // Shoud repeat work with abstract classes

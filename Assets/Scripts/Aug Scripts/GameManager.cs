@@ -19,8 +19,8 @@ public /*sealed */class GameManager : MonoBehaviour
     #region thread safe Singleton and readonly
     private static readonly object lockObject = new object();
     private static GameManager instance = null;
-    
-    private GameManager() 
+
+    private GameManager()
     {
         levelThemes = (LevelThemeName[])Enum.GetValues(typeof(LevelThemeName));
         levelTypes = (LevelTypeName[])Enum.GetValues(typeof(LevelTypeName));
@@ -30,7 +30,7 @@ public /*sealed */class GameManager : MonoBehaviour
         get
         {
             lock (lockObject)
-            {   
+            {
                 if (instance == null)
                 {
                     instance = new GameManager();
@@ -49,12 +49,13 @@ public /*sealed */class GameManager : MonoBehaviour
 
     [SerializeField] private MenuManager my_MenuManager;
     [SerializeField] private LevelConstructorManager my_LevelConstructorManager;
+    [SerializeField] private Timer my_Timer;
 
     //TASK // Set to Props with Get; private set
     //TASK // Or Set as readonly I want to protect levels!
     // Values
     private static List<Level> _levels;                         // All levels list using Screen Resolution
-    public static Dictionary<LevelThemeName, Dictionary<LevelTypeName, List<Level>>> levelsDict { get; private set; }  
+    public static Dictionary<LevelThemeName, Dictionary<LevelTypeName, List<Level>>> levelsDict { get; private set; }
 
     private void Awake()
     {
@@ -87,29 +88,8 @@ public /*sealed */class GameManager : MonoBehaviour
         CreateMainMenu();
         CreateThemeMenu();
 
-        // TASK // May be not in Start()
-        //CreateTypesSubMenu();
-        //CreateLevel();
-        //CreateNextLevel();
-
-        //int[] firstlevel = { 0, 0, 0 };
-        //CreateLevel(firstlevel);
-
-        //int[] levelId = { 0,0,0};
-        // TASK // Should know, what level you should create
-        //LevelFactory.CreateLevel(levelId);
-
-
         // TESTS
         OpenFirstTypeInTheme(LevelThemeName.SimpleFigures);
-        //OpenType(LevelThemeName.SimpleFigures, LevelTypeName.SelfOpenedMemory);
-        //OpenFirstTypeInTheme(LevelThemeName.Numerals);
-        //OpenFirstTypeInTheme(LevelThemeName.TagGame);
-        //OpenFirstTypeInTheme(LevelThemeName.Symbols);
-        //OpenFirstTypeInTheme(LevelThemeName.EnglishAlphabet);
-        //OpenFirstTypeInTheme(LevelThemeName.ArithmeticOperations);       
-        //OpenFirstTypeInTheme(LevelThemeName.RomanNumerals);
-
     }
     private void LoadGameData()
     {
@@ -130,10 +110,12 @@ public /*sealed */class GameManager : MonoBehaviour
         my_MenuManager.CreateThemeButtons(levelsDict);
     }
 
+    #region Level Control
     public void CreateLevel(Level level)
     {
-        my_MenuManager.StartNewLevel(true);
+        my_MenuManager.StartNewLevel(true);             // what here?
         my_LevelConstructorManager.CreateLevel(level);
+        StartTimer();
     }
     public void DestroyLevel()
     {
@@ -209,7 +191,7 @@ public /*sealed */class GameManager : MonoBehaviour
         {
             Debug.LogError($"There's no such theme name '{themeName}'");
             return;
-        }       
+        }
 
         if (levelTypes.TryGetValue(this.levelTypes[0], out var firstTypeLevels))
         {
@@ -263,6 +245,10 @@ public /*sealed */class GameManager : MonoBehaviour
 
     private void OnLevelCompleted(Level completedLevel)
     {
+        // Save timer value
+        var spentTime = StopTimerAndReturnStopTime();
+        SetPlayerTimeForLevel(spentTime, completedLevel);
+
         // TASK // Check if lastLevelInType or in Theme
         if (IsLastLevelInType(completedLevel))
         {
@@ -289,32 +275,32 @@ public /*sealed */class GameManager : MonoBehaviour
             CreateLevel(nextLevel);
         }
     }
-        //Level nextLevel = GetNextLevelNumber(completedLevel);
-        // TASK // Add lose condition late
-        //if (nextLevel == null)
-        //{
-        //    //TASK // Check if it was last level in this TYPE? IF YES - go to THEME MENU
-        //    if (true)
-        //    {
+    //Level nextLevel = GetNextLevelNumber(completedLevel);
+    // TASK // Add lose condition late
+    //if (nextLevel == null)
+    //{
+    //    //TASK // Check if it was last level in this TYPE? IF YES - go to THEME MENU
+    //    if (true)
+    //    {
 
-        //    }
+    //    }
 
-        //    DestroyLevel();
-        //    OpenNextLevelType(completedLevel); //TASK // set next level type
-            
-        //    my_MenuManager.GoBack();
-        //    my_MenuManager.UpdateTypeButtons(completedLevel.ThemeName);
-            
-        //    // go to type menu, save, etc
-        //    // TASK // Add win/lose condition later
-        //    // TASK // Add adv here later
-        //}
-        //else
-        //{
-        //    // know next level here
-        //    DestroyLevel();
-        //    CreateLevel(nextLevel);
-        //}
+    //    DestroyLevel();
+    //    OpenNextLevelType(completedLevel); //TASK // set next level type
+
+    //    my_MenuManager.GoBack();
+    //    my_MenuManager.UpdateTypeButtons(completedLevel.ThemeName);
+
+    //    // go to type menu, save, etc
+    //    // TASK // Add win/lose condition later
+    //    // TASK // Add adv here later
+    //}
+    //else
+    //{
+    //    // know next level here
+    //    DestroyLevel();
+    //    CreateLevel(nextLevel);
+    //}
     //}
     private bool IsLastLevelInType(Level level)                     // not best check
     {
@@ -342,7 +328,7 @@ public /*sealed */class GameManager : MonoBehaviour
 
         return (nextLevelInTheme == null);
     }
-    
+
     private void OpenNextType(Level previosLevel)
     {
         LevelTypeName currentType = previosLevel.LevelType.Name;
@@ -382,7 +368,7 @@ public /*sealed */class GameManager : MonoBehaviour
             {
                 level.OpenLevel();
             }
-        }      
+        }
     }
 
 
@@ -422,4 +408,21 @@ public /*sealed */class GameManager : MonoBehaviour
             }
         }
     }
+    #endregion
+
+    #region Timer Control
+    private void StartTimer()
+    {
+        my_Timer.ResetTimer();
+        my_Timer.StartTimer();
+    }
+    private TimeSpan StopTimerAndReturnStopTime()
+    {
+        return my_Timer.StopTimerAndReturnStopTime();
+    }
+    private void SetPlayerTimeForLevel(TimeSpan spentTime, Level level)
+    {
+        level.DynamicData.PlayerTime.Add(spentTime);
+    }
+    #endregion
 }

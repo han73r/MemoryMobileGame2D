@@ -35,10 +35,10 @@ namespace Managers
         }
         #endregion
 
+        [Header("GameObjects")]
         [SerializeField] private GameObject _grid;
         [SerializeField] private GameObject _gridRowPrefab;
-        [SerializeField] private GameObject _iconPrefab;
-        
+        [SerializeField] private GameObject _iconPrefab;       
 
         [Header("Lists")]
         [SerializeField] private List<GameObject> _myTextFieldsGOList;
