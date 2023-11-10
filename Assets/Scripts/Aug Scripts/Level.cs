@@ -274,7 +274,7 @@ namespace Data
         public int BestPlayerScore { get; }                         // values for dynamic difficulty
         public int MiddlePlayerScore { get; private set; }
         public int GoalForPlayerScore { get; internal set; }        // set dinamic difficulty from previous values
-        public List<TimeSpan> PlayerTime { get; set; }              // keeps data how fast win condition for player
+        public List<TimeSpan> PlayerTime { get; set; } = new List<TimeSpan>(); // keeps data how fast win condition for player
         public TimeSpan BestPlayerTime                              // only for win condition, where faster is better
         {
             get

@@ -424,5 +424,10 @@ public /*sealed */class GameManager : MonoBehaviour
     {
         level.DynamicData.PlayerTime.Add(spentTime);
     }
+
+    public Timer GetTimer()
+    {
+        return my_Timer;
+    }
     #endregion
 }

@@ -82,7 +82,8 @@ namespace Managers
         internal void CreateLevel(Level level)
         {
             CreateTextFieldsFromPrefabs(level);
-            // TASK // Create timer and etc
+            // TASK // Create timer and etc from GameManager
+            //StartTimer();
         }
 
         internal void DestroyLevel()
