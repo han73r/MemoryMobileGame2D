@@ -414,7 +414,7 @@ public /*sealed */class GameManager : MonoBehaviour
     private void StartTimer()
     {
         my_Timer.ResetTimer();
-        my_Timer.StartTimer();
+        my_Timer.StartCountup();
     }
     private TimeSpan StopTimerAndReturnStopTime()
     {

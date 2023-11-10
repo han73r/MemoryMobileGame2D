@@ -83,7 +83,11 @@ namespace Managers
         {
             CreateTextFieldsFromPrefabs(level);
             // TASK // Create timer and etc from GameManager
-            //StartTimer();
+            //StartTimer(); - for absolutely any level
+            if (level.LevelType.useTimer)
+            {
+                // for 1st level countdown timer!
+            }
         }
 
         internal void DestroyLevel()
